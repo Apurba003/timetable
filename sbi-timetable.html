@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBI PO 2027 — Daily Planner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --navy:    #0D1B2A;
+    --navy2:   #162032;
+    --navy3:   #1E2D40;
+    --saffron: #F5A623;
+    --gold:    #FFD166;
+    --mint:    #06D6A0;
+    --rose:    #EF476F;
+    --sky:     #118AB2;
+    --lavender:#9B72CF;
+    --text:    #E8EDF2;
+    --muted:   #7A8FA6;
+    --card:    #162032;
+    --border:  rgba(255,255,255,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--navy2) 0%, #0a2540 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--saffron);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  header h1 span { color: var(--saffron); }
+
+  .live-clock {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .clock-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .clock-date {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    text-align: right;
+  }
+
+  /* Day selector */
+  .day-tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+  }
+  .day-tabs::-webkit-scrollbar { display: none; }
+  .day-tab {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .day-tab:hover { border-color: var(--saffron); color: var(--saffron); }
+  .day-tab.active {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    color: var(--navy);
+  }
+  .day-tab.today-marker {
+    border-color: var(--mint);
+    color: var(--mint);
+  }
+  .day-tab.today-marker.active {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: var(--navy);
+  }
+
+  /* ── MAIN ── */
+  main { padding: 20px 16px 0; max-width: 540px; margin: 0 auto; }
+
+  /* Now banner */
+  #now-banner {
+    background: linear-gradient(90deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05));
+    border: 1px solid rgba(245,166,35,0.35);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 52px;
+  }
+  .now-dot {
+    width: 9px; height: 9px;
+    background: var(--saffron);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0.5); }
+    50%       { box-shadow: 0 0 0 7px rgba(245,166,35,0); }
+  }
+  #now-text { font-size: 13px; line-height: 1.4; }
+  #now-label { font-weight: 700; color: var(--saffron); }
+  #now-sub   { color: var(--muted); font-size: 12px; }
+
+  /* Day title */
+  .day-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .day-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Schedule blocks */
+  .schedule { display: flex; flex-direction: column; gap: 8px; }
+
+  .block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 13px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0;
+    background: var(--block-color, var(--navy3));
+  }
+  .block.current {
+    border-color: var(--block-color, var(--saffron));
+    background: color-mix(in srgb, var(--block-color, var(--saffron)) 8%, var(--card));
+  }
+  .block.past { opacity: 0.45; }
+
+  .block-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+    flex-shrink: 0;
+    width: 72px;
+    padding-top: 1px;
+  }
+  .block-content { flex: 1; }
+  .block-icon { font-size: 17px; margin-bottom: 3px; }
+  .block-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .block-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .subject-chip {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--chip-color, var(--saffron)) 18%, transparent);
+    color: var(--chip-color, var(--saffron));
+    border: 1px solid color-mix(in srgb, var(--chip-color, var(--saffron)) 35%, transparent);
+  }
+
+  /* Tips card */
+  .tips-section { margin-top: 24px; }
+  .tips-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .tip-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+  .tip-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .tip-text strong { color: var(--text); }
+
+  /* Progress ring */
+  .progress-bar {
+    margin: 18px 0 8px;
+    background: var(--navy3);
+    border-radius: 8px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    transition: width 1s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .progress-label span:last-child { color: var(--saffron); font-weight: 600; }
+
+  /* Subject legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    margin-bottom: 4px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Weekend badge */
+  .weekend-badge {
+    display: inline-block;
+    background: rgba(155,114,207,0.15);
+    border: 1px solid rgba(155,114,207,0.35);
+    color: var(--lavender);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .now-dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="header-badge">SBI PO 2027</div>
+      <h1>Daily <span>Planner</span></h1>
+    </div>
+    <div class="live-clock">
+      <div class="clock-time" id="clock">--:--</div>
+      <div class="clock-date" id="date-display">--</div>
+    </div>
+  </div>
+  <div class="day-tabs" id="day-tabs">
+    <button class="day-tab" data-day="1">Mon</button>
+    <button class="day-tab" data-day="2">Tue</button>
+    <button class="day-tab" data-day="3">Wed</button>
+    <button class="day-tab" data-day="4">Thu</button>
+    <button class="day-tab" data-day="5">Fri</button>
+    <button class="day-tab" data-day="6">Sat</button>
+    <button class="day-tab" data-day="0">Sun</button>
+  </div>
+</header>
+
+<main>
+  <div id="now-banner">
+    <div class="now-dot"></div>
+    <div id="now-text">
+      <div id="now-label">Loading…</div>
+      <div id="now-sub"></div>
+    </div>
+  </div>
+
+  <div class="progress-label">
+    <span>Day Progress</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#F5A623"></div>Reasoning</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#06D6A0"></div>English</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#118AB2"></div>GA / Banking</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9B72CF"></div>Revision</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EF476F"></div>Coaching / Break</div>
+  </div>
+
+  <div id="schedule-container" style="margin-top:20px;"></div>
+  <div class="tips-section" id="tips-section"></div>
+</main>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────
+// Colors
+const C = {
+  saffron:  '#F5A623',
+  mint:     '#06D6A0',
+  sky:      '#118AB2',
+  lavender: '#9B72CF',
+  rose:     '#EF476F',
+  muted:    '#4A6070',
+  gold:     '#FFD166',
+};
+
+// Block schema: { start, end, icon, label, sub, color, chip? }
+// Times in "HH:MM" 24h
+
+const weekdayBlocks = [
+  { start:'07:00', end:'07:30', icon:'⏰', label:'Wake Up', sub:'Freshen up, drink water, 5-min stretch', color: C.muted },
+  { start:'07:30', end:'08:00', icon:'📰', label:'Current Affairs (30 min)', sub:'Read newspaper headlines or The Hindu / GK Today app', color: C.sky, chip:'General Awareness', chipColor: C.sky },
+  { start:'08:00', end:'08:15', icon:'🎒', label:'Leave Home', sub:'Pack notes, travel ready', color: C.muted },
+  { start:'08:15', end:'09:15', icon:'🚌', label:'Travel to Coaching', sub:'Listen to banking awareness podcast or revision audio', color: C.rose },
+  { start:'09:15', end:'11:15', icon:'🏫', label:'Coaching Class', sub:'Be 100% attentive — note every concept the teacher covers', color: C.rose },
+  { start:'11:15', end:'12:00', icon:'🚌', label:'Travel Back Home', sub:'Review your coaching notes mentally, highlight key points', color: C.rose },
+  { start:'12:00', end:'13:00', icon:'🚿', label:'Bath + Rest', sub:'Freshen up, relax — no study, protect your energy', color: C.muted },
+  { start:'13:00', end:'14:00', icon:'🍽️', label:'Lunch + Break', sub:'Eat well, short walk if possible — no screens for 20 min', color: C.muted },
+  { start:'14:00', end:'15:30', icon:'🔢', label:'Quantitative Aptitude (90 min)', sub:'Today\'s coaching topic + 15 practice questions', color: C.saffron, chip:'Quant', chipColor: C.saffron },
+  { start:'15:30', end:'16:30', icon:'🧩', label:'Reasoning Ability (60 min)', sub:'Today\'s coaching topic — syllogisms, puzzles, seating', color: C.saffron, chip:'Reasoning', chipColor: C.saffron },
+  { start:'16:30', end:'17:00', icon:'☕', label:'Short Break', sub:'Tea, eyes rest, short walk — mandatory, not optional', color: C.muted },
+  { start:'17:00', end:'18:00', icon:'📝', label:'English Language (60 min)', sub:'Reading comp, grammar rules, vocab (10 words/day)', color: C.mint, chip:'English', chipColor: C.mint },
+  { start:'18:00', end:'18:30', icon:'🍜', label:'Maggi + Chai Break', sub:'Cook & eat — away from books, let brain consolidate', color: C.muted },
+  { start:'18:30', end:'20:00', icon:'🏦', label:'Banking Awareness (90 min)', sub:'Banking terms, RBI, govt schemes, current banking news', color: C.sky, chip:'Banking / GA', chipColor: C.sky },
+  { start:'20:00', end:'21:00', icon:'📊', label:'Mock Quiz / Previous Year Qs (60 min)', sub:'10–15 mixed questions from all subjects — test yourself', color: C.gold, chip:'Practice', chipColor: C.gold },
+  { start:'21:00', end:'21:30', icon:'🍛', label:'Dinner', sub:'Eat properly, away from study', color: C.muted },
+  { start:'21:30', end:'22:00', icon:'📓', label:'Quick Revision (30 min)', sub:'Re-read today\'s notes, tick what you remember', color: C.lavender, chip:'Revision', chipColor: C.lavender },
+  { start:'22:00', end:'22:30', icon:'📱', label:'Free Time / Phone', sub:'Chat, social media — you earned it, but set a hard stop', color: C.muted },
+  { start:'22:30', end:'23:00', icon:'🌙', label:'Wind Down', sub:'Prepare tomorrow\'s material, 5-min breathing, no bright screens', color: C.muted },
+  { start:'23:00', end:'00:00', icon:'😴', label:'Sleep by 11 PM', sub:'Aim to sleep by 11 PM — quality sleep sharpens memory', color: C.muted },
+];
+
+const saturdayBlocks = [
+  { start:'07:00', end:'07:30', icon:'⏰', label:'Wake Up', sub:'Freshen up, water, light stretch', color: C.muted },
+  { start:'07:30', end:'09:00', icon:'🔄', label:'Week Revision — Quant + Reasoning (90 min)', sub:'Go through all weekday notes for Quant & Reasoning', color: C.lavender, chip:'Revision', chipColor: C.lavender },
+  { start:'09:00', end:'09:15', icon:'☕', label:'Chai Break', sub:'', color: C.muted },
+  { start:'09:15', end:'10:30', icon:'🔄', label:'Week Revision — English + Banking (75 min)', sub:'English grammar rules + all banking topics from the week', color: C.lavender, chip:'Revision', chipColor: C.lavender },
+  { start:'10:30', end:'11:30', icon:'🗞️', label:'Current Affairs Deep Dive (60 min)', sub:'Read weekly current affairs — make a 1-page summary', color: C.sky, chip:'GA', chipColor: C.sky },
+  { start:'11:30', end:'13:00', icon:'🍽️', label:'Lunch Break + Rest', sub:'', color: C.muted },
+  { start:'13:00', end:'14:30', icon:'📝', label:'Full Mock Test Attempt (90 min)', sub:'Attempt one full SBI PO prelim mock — timed', color: C.saffron, chip:'Mock Test', chipColor: C.saffron },
+  { start:'14:30', end:'15:30', icon:'🔍', label:'Mock Analysis (60 min)', sub:'Review every wrong answer — understand the concept', color: C.rose, chip:'Analysis', chipColor: C.rose },
+  { start:'15:30', end:'16:00', icon:'☕', label:'Break', sub:'Rest your eyes', color: C.muted },
+  { start:'16:00', end:'17:30', icon:'🔢', label:'Weak Area Practice (90 min)', sub:'Work on your weakest subject from the mock', color: C.saffron },
+  { start:'17:30', end:'18:00', icon:'🍜', label:'Maggi / Snack', sub:'', color: C.muted },
+  { start:'18:00', end:'19:00', icon:'📖', label:'Vocabulary + Banking Terms (60 min)', sub:'Flashcard review, 10 new words + 5 banking terms', color: C.mint, chip:'English + Banking', chipColor: C.mint },
+  { start:'19:00', end:'20:00', icon:'📱', label:'Free Time', sub:'Rest, relax, chat — total off', color: C.muted },
+  { start:'20:00', end:'21:00', icon:'🍛', label:'Dinner', sub:'', color: C.muted },
+  { start:'21:00', end:'22:00', icon:'📓', label:'Weekly Mistakes Journal (60 min)', sub:'Write down every mistake from this week — patterns to fix', color: C.lavender, chip:'Revision', chipColor: C.lavender },
+  { start:'22:00', end:'23:00', icon:'🌙', label:'Free / Wind Down', sub:'Screen-free if possible', color: C.muted },
+  { start:'23:00', end:'00:00', icon:'😴', label:'Sleep', sub:'', color: C.muted },
+];
+
+const sundayBlocks = [
+  { start:'07:00', end:'08:00', icon:'⏰', label:'Wake Up + Slow Morning', sub:'No alarm rush — enjoy morning tea/coffee peacefully', color: C.muted },
+  { start:'08:00', end:'09:00', icon:'📰', label:'Current Affairs + Newspaper (60 min)', sub:'Sunday paper — focus on economy, banking, govt schemes', color: C.sky, chip:'GA', chipColor: C.sky },
+  { start:'09:00', end:'10:30', icon:'🏦', label:'Banking Awareness Deep Study (90 min)', sub:'Pick 2 big topics: RBI functions, types of accounts, NEFT/RTGS etc.', color: C.sky, chip:'Banking', chipColor: C.sky },
+  { start:'10:30', end:'11:30', icon:'🧩', label:'Reasoning Practice (60 min)', sub:'Focus on puzzle-heavy topics — calendars, blood relations, direction', color: C.saffron, chip:'Reasoning', chipColor: C.saffron },
+  { start:'11:30', end:'13:00', icon:'🍽️', label:'Lunch + Nap (optional)', sub:'Rest is productive — 20 min nap helps memory consolidation', color: C.muted },
+  { start:'13:00', end:'14:30', icon:'📝', label:'English Language Focus (90 min)', sub:'Reading comprehension practice + error spotting', color: C.mint, chip:'English', chipColor: C.mint },
+  { start:'14:30', end:'15:00', icon:'☕', label:'Break', sub:'', color: C.muted },
+  { start:'15:00', end:'16:30', icon:'🔢', label:'Quantitative Aptitude (90 min)', sub:'Work on one new chapter — simplification, percentages, SI/CI', color: C.saffron, chip:'Quant', chipColor: C.saffron },
+  { start:'16:30', end:'17:00', icon:'📊', label:'Previous Year Paper Practice (30 min)', sub:'10–15 questions from old SBI PO papers', color: C.gold, chip:'Practice', chipColor: C.gold },
+  { start:'17:00', end:'17:30', icon:'🍜', label:'Snack Break', sub:'', color: C.muted },
+  { start:'17:30', end:'18:30', icon:'📓', label:'Full Week Revision Summary (60 min)', sub:'1 page summary per subject of the full week — keep it short', color: C.lavender, chip:'Revision', chipColor: C.lavender },
+  { start:'18:30', end:'20:00', icon:'🌿', label:'Complete Rest / Outing', sub:'Go out, walk, watch something light — you need full recovery', color: C.muted },
+  { start:'20:00', end:'21:00', icon:'🍛', label:'Dinner', sub:'', color: C.muted },
+  { start:'21:00', end:'22:00', icon:'📋', label:'Next Week Planning (60 min)', sub:'Check coaching syllabus, prepare notebook, set daily targets', color: C.mint },
+  { start:'22:00', end:'23:00', icon:'🌙', label:'Wind Down + Sleep Early', sub:'Target 10:30 PM on Sunday — start the week fresh', color: C.muted },
+];
+
+const tips = [
+  { icon:'💡', title:'Add to your routine', text:'<strong>Anki flashcards</strong> (free app) for vocab + banking terms. Even 10 cards/day = 3,650 cards a year.' },
+  { icon:'📵', title:'Phone discipline', text:'Use <strong>phone in set windows only</strong> — 22:00–22:30 on weekdays. Turn off notifications during study blocks.' },
+  { icon:'💧', title:'Hydration', text:'Keep a water bottle at your study table. <strong>Dehydration cuts focus by 20%.</strong>' },
+  { icon:'✍️', title:'Write don\'t just read', text:'For every topic, write 5 key points from memory after reading. This is the single best study technique.' },
+  { icon:'🎯', title:'SBI PO 2027 target', text:'You have <strong>~18 months</strong>. 6 months basics → 6 months mock practice → 6 months intensive revision. You\'re in the right phase.' },
+  { icon:'🌙', title:'Sleep is study', text:'<strong>Move sleep target to 11 PM</strong> from 12:30 AM. Sleep consolidates everything you studied. This is the biggest upgrade you can make.' },
+];
+
+// ─── UTILS ──────────────────────────────────────────────────
+function toMins(str) {
+  const [h, m] = str.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatAMPM(str) {
+  let [h, m] = str.split(':').map(Number);
+  const ampm = h < 12 ? 'AM' : 'PM';
+  if (h > 12) h -= 12;
+  if (h === 0) h = 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function getBlocks(dayIndex) {
+  if (dayIndex === 6) return saturdayBlocks;
+  if (dayIndex === 0) return sundayBlocks;
+  return weekdayBlocks;
+}
+
+function getDayName(dayIndex) {
+  return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayIndex];
+}
+
+function isWeekend(d) { return d === 0 || d === 6; }
+
+// ─── RENDER ─────────────────────────────────────────────────
+let selectedDay = null;
+
+function renderSchedule(dayIndex) {
+  const blocks = getBlocks(dayIndex);
+  const now   = new Date();
+  const nowM  = now.getHours() * 60 + now.getMinutes();
+  const isToday = dayIndex === now.getDay();
+  const container = document.getElementById('schedule-container');
+
+  // progress
+  const dayStart = 7*60, dayEnd = 23*60;
+  const pct = isToday ? Math.min(100, Math.max(0, Math.round((nowM - dayStart)/(dayEnd - dayStart)*100))) : (dayIndex < now.getDay() ? 100 : 0);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // now banner
+  let nowBlock = null;
+  if (isToday) {
+    for (const b of blocks) {
+      let s = toMins(b.start), e = toMins(b.end === '00:00' ? '24:00' : b.end);
+      if (nowM >= s && nowM < e) { nowBlock = b; break; }
+    }
+  }
+  const nb = document.getElementById('now-banner');
+  if (!isToday) {
+    document.getElementById('now-label').textContent = getDayName(dayIndex) + '\'s Schedule';
+    document.getElementById('now-sub').textContent = isWeekend(dayIndex) ? 'Revision & Recovery Day' : 'Coaching + Study Day';
+    nb.style.borderColor = 'rgba(122,143,166,0.3)';
+    document.querySelector('.now-dot').style.background = '#4A6070';
+  } else if (nowBlock) {
+    document.getElementById('now-label').textContent = '🟡 Right now: ' + nowBlock.label;
+    document.getElementById('now-sub').textContent = nowBlock.sub;
+    nb.style.borderColor = 'rgba(245,166,35,0.45)';
+    document.querySelector('.now-dot').style.background = nowBlock.color;
+  } else {
+    document.getElementById('now-label').textContent = nowM < 7*60 ? 'Still sleeping — next block at 7:00 AM' : 'Day complete! Rest well.';
+    document.getElementById('now-sub').textContent = '';
+  }
+
+  // blocks
+  const weekend = isWeekend(dayIndex);
+  const heading = getDayName(dayIndex) + (weekend ? '' : ' — Weekday');
+  container.innerHTML = `<div class="day-title">${heading}${weekend ? '<span class="weekend-badge">' + (dayIndex===6?'Revision':'Recovery') + '</span>' : ''}</div><div class="schedule" id="blocks"></div>`;
+  const bContainer = document.getElementById('blocks');
+
+  blocks.forEach(b => {
+    const sM = toMins(b.start);
+    const eM = toMins(b.end === '00:00' ? '24:00' : b.end);
+    const isCurrent = isToday && nowM >= sM && nowM < eM;
+    const isPast    = isToday && nowM >= eM;
+
+    const el = document.createElement('div');
+    el.className = 'block' + (isCurrent ? ' current' : '') + (isPast ? ' past' : '');
+    el.style.setProperty('--block-color', b.color);
+
+    el.innerHTML = `
+      <div class="block-time">${formatAMPM(b.start)}<br>${formatAMPM(b.end === '00:00' ? '00:00' : b.end)}</div>
+      <div class="block-content">
+        <div class="block-icon">${b.icon}</div>
+        <div class="block-label">${b.label}</div>
+        ${b.sub ? `<div class="block-sub">${b.sub}</div>` : ''}
+        ${b.chip ? `<span class="subject-chip" style="--chip-color:${b.chipColor || b.color}">${b.chip}</span>` : ''}
+      </div>
+    `;
+    bContainer.appendChild(el);
+  });
+
+  // tips (only show once)
+  const ts = document.getElementById('tips-section');
+  ts.innerHTML = '<div class="tips-title">Improvements & Tips</div>' +
+    tips.map(t => `<div class="tip-card"><div class="tip-icon">${t.icon}</div><div class="tip-text"><strong>${t.title}:</strong> ${t.text}</div></div>`).join('');
+}
+
+function setActiveTab(dayIndex) {
+  document.querySelectorAll('.day-tab').forEach(t => {
+    t.classList.remove('active');
+    if (parseInt(t.dataset.day) === dayIndex) t.classList.add('active');
+  });
+}
+
+// ─── CLOCK ──────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  const s = now.getSeconds().toString().padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('date-display').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+const today = new Date().getDay();
+
+// Mark today's tab
+document.querySelectorAll('.day-tab').forEach(btn => {
+  if (parseInt(btn.dataset.day) === today) btn.classList.add('today-marker');
+  btn.addEventListener('click', () => {
+    selectedDay = parseInt(btn.dataset.day);
+    setActiveTab(selectedDay);
+    renderSchedule(selectedDay);
+  });
+});
+
+selectedDay = today;
+setActiveTab(today);
+renderSchedule(today);
+updateClock();
+setInterval(updateClock, 1000);
+
+// Auto-refresh "now" banner every minute
+setInterval(() => {
+  if (selectedDay === new Date().getDay()) renderSchedule(selectedDay);
+}, 60000);
+</script>
+</body>
+</html>
