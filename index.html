@@ -2,529 +2,314 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
   <title>Banking 2027 Study Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #070b14;
-      --bg2: #0d1321;
-      --card: #121a2b;
-      --card-hover: #182235;
-      --border: #1c2639;
-      --border2: #2a364d;
-      --accent: #3b82f6;
-      --accent2: #60a5fa;
-      --accent-soft: rgba(59,130,246,0.14);
-      --green: #10b981;
-      --green-soft: rgba(16,185,129,0.14);
-      --orange: #f59e0b;
-      --orange-soft: rgba(245,158,11,0.14);
-      --red: #ef4444;
-      --red-soft: rgba(239,68,68,0.12);
-      --purple: #8b5cf6;
-      --purple-soft: rgba(139,92,246,0.14);
-      --pink: #ec4899;
-      --text: #f1f5f9;
-      --text2: #94a3b8;
-      --text3: #64748b;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 8px 32px rgba(0,0,0,0.35);
-      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      --bg: #070b14; --bg2: #0c1220; --card: #111827; --card-hover: #172033;
+      --border: #1c2639; --border2: #2a364d; --accent: #3b82f6; --accent2: #60a5fa;
+      --accent-soft: rgba(59,130,246,0.14); --green: #10b981; --green-soft: rgba(16,185,129,0.14);
+      --orange: #f59e0b; --orange-soft: rgba(245,158,11,0.14); --red: #ef4444;
+      --red-soft: rgba(239,68,68,0.12); --purple: #8b5cf6; --purple-soft: rgba(139,92,246,0.14);
+      --text: #f1f5f9; --text2: #94a3b8; --text3: #64748b; --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.35); --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59,130,246,0.12), transparent),
-        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139,92,246,0.06), transparent);
+      background: var(--bg); color: var(--text); line-height: 1.5;
+      min-height: 100vh; min-height: 100dvh; -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(ellipse 90% 55% at 50% -25%, rgba(59,130,246,0.13), transparent),
+        radial-gradient(ellipse 50% 40% at 100% 100%, rgba(139,92,246,0.07), transparent);
+      overflow-x: hidden;
     }
+    .app { max-width: 920px; margin: 0 auto; padding: 16px 14px calc(48px + var(--safe-bottom)); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes auroraSpin { to { transform: rotate(360deg); } }
+    @keyframes colonBlink { 0%,100% { opacity:1; } 50% { opacity:0.18; } }
+    @keyframes digitFlip { 0% { transform: scaleY(1); } 40% { transform: scaleY(0.78); } 100% { transform: scaleY(1); } }
+    @keyframes pulseSoft { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.12); } 50% { box-shadow: 0 0 14px 2px rgba(16,185,129,0.22); } }
+    @keyframes floatGlow { 0%,100% { transform: translate(0,0) scale(1); opacity: 1; } 50% { transform: translate(-18px, 12px) scale(1.05); opacity: 0.75; } }
+    @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
-    .app {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 18px 16px 56px;
-    }
-
-    /* ===== HEADER ===== */
     .header {
-      background: linear-gradient(160deg, #0f172a 0%, #1a1635 45%, #0c1220 100%);
-      border: 1px solid var(--border2);
-      border-radius: 22px;
-      padding: 22px 20px 18px;
-      margin-bottom: 18px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      animation: fadeUp 0.5s ease both;
+      background: linear-gradient(155deg, #0f172a 0%, #1a1638 42%, #0c1220 100%);
+      border: 1px solid var(--border2); border-radius: 20px; padding: 20px 16px 16px;
+      margin-bottom: 14px; text-align: center; position: relative; overflow: hidden;
+      box-shadow: var(--shadow); animation: fadeUp 0.5s ease both;
     }
     .header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -20%;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(59,130,246,0.14) 0%, transparent 68%);
-      pointer-events: none;
-      animation: floatGlow 8s ease-in-out infinite;
+      content: ''; position: absolute; top: -55%; right: -25%; width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 68%);
+      pointer-events: none; animation: floatGlow 9s ease-in-out infinite;
     }
-    @keyframes floatGlow {
-      0%, 100% { transform: translate(0,0); opacity: 1; }
-      50% { transform: translate(-20px, 15px); opacity: 0.7; }
-    }
-    .header-title {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 4px;
-    }
+    .header-title { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
     .header h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      margin-bottom: 12px;
-      background: linear-gradient(90deg, #e0f2fe, #93c5fd, #c4b5fd);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: clamp(1.15rem, 4.5vw, 1.4rem); font-weight: 800; letter-spacing: -0.4px; margin-bottom: 12px;
+      background: linear-gradient(90deg, #e0f2fe, #93c5fd, #c4b5fd); background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 6s linear infinite;
     }
-
-    /* Clock */
-    .clock-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .clock-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .digital-clock-box {
-      position: relative;
-      padding: 16px 26px 14px;
-      border-radius: 18px;
-      background: #0a101c;
+      position: relative; padding: 14px 22px 12px; border-radius: 16px; background: #0a101c;
       border: 1px solid rgba(96,165,250,0.2);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 12px 40px rgba(0,0,0,0.45), 0 0 50px rgba(59,130,246,0.08);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 10px 36px rgba(0,0,0,0.45), 0 0 48px rgba(59,130,246,0.08);
       overflow: hidden;
     }
     .digital-clock-box::before {
-      content: '';
-      position: absolute;
-      inset: -80%;
-      background: conic-gradient(from 0deg, transparent 0%, rgba(59,130,246,0.3) 8%, transparent 18%, rgba(139,92,246,0.2) 50%, transparent 60%, rgba(96,165,250,0.25) 85%, transparent 100%);
-      animation: auroraSpin 10s linear infinite;
-      pointer-events: none;
+      content: ''; position: absolute; inset: -80%;
+      background: conic-gradient(from 0deg, transparent 0%, rgba(59,130,246,0.28) 8%, transparent 18%, rgba(139,92,246,0.18) 50%, transparent 60%, rgba(96,165,250,0.22) 85%, transparent 100%);
+      animation: auroraSpin 12s linear infinite; pointer-events: none;
     }
-    @keyframes auroraSpin { to { transform: rotate(360deg); } }
     .digital-clock-box::after {
-      content: '';
-      position: absolute;
-      inset: 1.5px;
-      border-radius: 16.5px;
-      background: linear-gradient(165deg, #0f172a 0%, #141e30 45%, #0b1220 100%);
-      z-index: 0;
+      content: ''; position: absolute; inset: 1.5px; border-radius: 14.5px;
+      background: linear-gradient(165deg, #0f172a 0%, #141e30 45%, #0b1220 100%); z-index: 0;
     }
-    .clock-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-    .clock-digits { display: flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
-    .digit-group { display: flex; gap: 3px; }
+    .clock-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .clock-digits { display: flex; align-items: center; gap: 2px; font-variant-numeric: tabular-nums; }
+    .digit-group { display: flex; gap: 2px; }
     .digit {
-      position: relative;
-      width: 32px; height: 44px;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      border-radius: 8px;
-      border: 1px solid rgba(96,165,250,0.12);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
+      width: 28px; height: 40px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 7px; border: 1px solid rgba(96,165,250,0.12);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .digit.flip {
-      animation: digitFlip 0.32s ease;
-      border-color: rgba(96,165,250,0.4);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 16px rgba(59,130,246,0.22);
-    }
-    @keyframes digitFlip {
-      0% { transform: scaleY(1); }
-      40% { transform: scaleY(0.8); }
-      100% { transform: scaleY(1); }
-    }
+    .digit.flip { animation: digitFlip 0.3s ease; border-color: rgba(96,165,250,0.4); box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 14px rgba(59,130,246,0.22); }
     .digit span {
-      font-size: 1.7rem; font-weight: 700;
+      font-size: 1.55rem; font-weight: 700;
       background: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 40%, #38bdf8 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      filter: drop-shadow(0 0 6px rgba(56,189,248,0.4));
-      line-height: 1;
+      filter: drop-shadow(0 0 5px rgba(56,189,248,0.4)); line-height: 1;
     }
-    .colon {
-      font-size: 1.5rem; font-weight: 700; color: #38bdf8;
-      padding: 0 2px;
-      animation: colonBlink 1s step-end infinite;
-      text-shadow: 0 0 8px rgba(56,189,248,0.45);
-      margin-bottom: 2px;
-    }
-    @keyframes colonBlink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
-    .clock-ampm {
-      font-size: 0.8rem; font-weight: 800; letter-spacing: 2.5px;
-      padding: 2px 11px; border-radius: 20px;
-      background: rgba(56,189,248,0.1); color: #7dd3fc;
-      border: 1px solid rgba(56,189,248,0.22);
-    }
-    .clock-meta { font-size: 0.72rem; color: var(--text2); font-weight: 500; margin-top: 1px; }
+    .colon { font-size: 1.35rem; font-weight: 700; color: #38bdf8; padding: 0 1px; animation: colonBlink 1s step-end infinite; text-shadow: 0 0 8px rgba(56,189,248,0.45); margin-bottom: 1px; }
+    .clock-ampm { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.2px; padding: 2px 10px; border-radius: 16px; background: rgba(56,189,248,0.1); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.2); }
+    .clock-meta { font-size: 0.7rem; color: var(--text2); font-weight: 500; }
     .streak-pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 12px;
-      background: var(--green-soft); color: #34d399;
-      padding: 5px 14px; border-radius: 20px;
-      font-size: 0.78rem; font-weight: 600;
-      border: 1px solid rgba(16,185,129,0.25);
-      animation: pulseSoft 2.5s ease-in-out infinite;
-    }
-    @keyframes pulseSoft {
-      0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.15); }
-      50% { box-shadow: 0 0 12px 2px rgba(16,185,129,0.2); }
+      display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+      background: var(--green-soft); color: #34d399; padding: 5px 13px; border-radius: 20px;
+      font-size: 0.76rem; font-weight: 600; border: 1px solid rgba(16,185,129,0.25);
+      animation: pulseSoft 2.8s ease-in-out infinite;
     }
 
-    /* Now card */
+    .notion-banner {
+      display: flex; align-items: center; gap: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(139,92,246,0.08));
+      border: 1px solid rgba(139,92,246,0.28); border-radius: 14px; padding: 12px 14px;
+      margin-bottom: 14px; text-decoration: none; color: inherit;
+      transition: all var(--transition); animation: fadeUp 0.55s ease both;
+    }
+    .notion-banner:hover { border-color: rgba(139,92,246,0.5); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(139,92,246,0.12); }
+    .notion-icon { width: 40px; height: 40px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .notion-text { flex: 1; min-width: 0; }
+    .notion-title { font-weight: 700; font-size: 0.88rem; }
+    .notion-sub { font-size: 0.72rem; color: var(--text3); margin-top: 1px; }
+    .notion-arrow { color: var(--purple); font-size: 1.1rem; flex-shrink: 0; }
+
     .now-card {
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      display: flex; gap: 14px; align-items: center;
-      transition: border-color var(--transition), transform var(--transition);
-      animation: fadeUp 0.55s ease both;
+      background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius);
+      padding: 13px 14px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center;
+      transition: border-color var(--transition), transform var(--transition); animation: fadeUp 0.6s ease both;
     }
     .now-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-    .now-time {
-      background: var(--accent-soft); color: #60a5fa;
-      border: 1px solid rgba(59,130,246,0.28);
-      padding: 8px 12px; border-radius: 10px;
-      font-weight: 700; font-size: 0.76rem;
-      white-space: nowrap; text-align: center; min-width: 108px;
-    }
+    .now-time { background: var(--accent-soft); color: #60a5fa; border: 1px solid rgba(59,130,246,0.28); padding: 8px 10px; border-radius: 10px; font-weight: 700; font-size: 0.72rem; white-space: nowrap; text-align: center; min-width: 100px; }
     .now-content { flex: 1; min-width: 0; }
-    .now-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); }
-    .now-title { font-weight: 700; font-size: 0.98rem; }
-    .now-desc { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+    .now-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); }
+    .now-title { font-weight: 700; font-size: 0.94rem; }
+    .now-desc { font-size: 0.75rem; color: var(--text2); margin-top: 1px; }
 
-    /* Date nav */
-    .date-nav {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 14px;
-      animation: fadeUp 0.6s ease both;
-    }
+    .date-nav { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; animation: fadeUp 0.65s ease both; }
     .date-nav .date-info { flex: 1; text-align: center; }
-    .date-nav .date-main { font-weight: 700; font-size: 0.95rem; }
-    .date-nav .date-sub { font-size: 0.7rem; color: var(--text3); }
+    .date-nav .date-main { font-weight: 700; font-size: 0.9rem; }
+    .date-nav .date-sub { font-size: 0.68rem; color: var(--text3); }
 
-    /* Buttons */
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-      background: var(--accent); color: white;
-      border: none; padding: 8px 14px; border-radius: 9px;
-      cursor: pointer; font-size: 0.8rem; font-weight: 600;
-      font-family: inherit;
-      transition: all 0.15s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      background: var(--accent); color: white; border: none; padding: 8px 13px; border-radius: 9px;
+      cursor: pointer; font-size: 0.78rem; font-weight: 600; font-family: inherit;
+      transition: all 0.18s ease; position: relative; overflow: hidden;
     }
     .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
-    .btn:active { transform: scale(0.97); }
-    .btn-sm { padding: 6px 10px; font-size: 0.74rem; border-radius: 7px; }
-    .btn-xs { padding: 4px 8px; font-size: 0.7rem; border-radius: 6px; min-width: 28px; }
+    .btn:active { transform: scale(0.96); }
+    .btn-sm { padding: 6px 10px; font-size: 0.72rem; border-radius: 7px; }
+    .btn-xs { padding: 4px 8px; font-size: 0.68rem; border-radius: 6px; min-width: 28px; }
     .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
     .btn-ghost:hover { background: var(--card-hover); color: var(--text); }
-    .btn-green { background: var(--green); }
-    .btn-orange { background: var(--orange); color: #111; }
-    .btn-red { background: var(--red); }
-    .btn-purple { background: var(--purple); }
+    .btn-green { background: var(--green); } .btn-orange { background: var(--orange); color: #111; }
+    .btn-red { background: var(--red); } .btn-purple { background: var(--purple); }
     .btn-block { width: 100%; }
 
-    /* Tabs */
-    .tabs {
-      display: flex; gap: 4px; margin-bottom: 14px;
-      overflow-x: auto; padding-bottom: 2px;
-      scrollbar-width: none;
-      animation: fadeUp 0.65s ease both;
+    .tabs-wrap {
+      position: sticky; top: 0; z-index: 50;
+      background: linear-gradient(180deg, var(--bg) 70%, transparent);
+      padding: 4px 0 8px; margin: 0 -2px 10px; animation: fadeUp 0.7s ease both;
     }
+    .tabs { display: flex; gap: 3px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
     .tabs::-webkit-scrollbar { display: none; }
     .tab {
-      padding: 8px 14px; background: transparent;
-      border: 1px solid transparent; border-radius: 10px;
-      cursor: pointer; font-size: 0.78rem; font-weight: 600;
-      color: var(--text3); white-space: nowrap;
-      transition: all 0.18s; font-family: inherit;
+      padding: 8px 12px; background: transparent; border: 1px solid transparent; border-radius: 10px;
+      cursor: pointer; font-size: 0.74rem; font-weight: 600; color: var(--text3); white-space: nowrap;
+      transition: all 0.2s; font-family: inherit; flex-shrink: 0;
     }
     .tab:hover { color: var(--text2); background: var(--card); }
-    .tab.active {
-      background: var(--accent-soft); color: #60a5fa;
-      border-color: rgba(59,130,246,0.3);
-      box-shadow: 0 0 16px rgba(59,130,246,0.08);
-    }
+    .tab.active { background: var(--accent-soft); color: #60a5fa; border-color: rgba(59,130,246,0.3); box-shadow: 0 0 16px rgba(59,130,246,0.08); }
 
-    /* Cards */
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      transition: border-color var(--transition), box-shadow var(--transition);
-      animation: fadeUp 0.5s ease both;
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; margin-bottom: 12px; transition: border-color var(--transition), box-shadow var(--transition);
+      animation: fadeUp 0.45s ease both;
     }
     .card:hover { border-color: var(--border2); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .card-title { font-size: 0.95rem; font-weight: 700; }
-    .card-sub { font-size: 0.74rem; color: var(--text3); margin-top: 2px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+    .card-title { font-size: 0.92rem; font-weight: 700; }
+    .card-sub { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
 
-    /* Progress bar */
     .progress-track { height: 7px; background: var(--bg2); border-radius: 4px; overflow: hidden; margin: 8px 0 4px; }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #3b82f6, #10b981);
-      border-radius: 4px;
-      transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 4px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-    /* Tasks */
-    .task {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 11px 0; border-bottom: 1px solid var(--border);
-      transition: opacity 0.2s;
-    }
+    .task { display: flex; align-items: flex-start; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
     .task:last-child { border-bottom: none; }
-    .task input[type="checkbox"] {
-      width: 18px; height: 18px; margin-top: 3px;
-      accent-color: var(--green); cursor: pointer; flex-shrink: 0;
-    }
+    .task input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
     .task-body { flex: 1; min-width: 0; }
-    .task-name { font-weight: 600; font-size: 0.88rem; }
-    .task-meta { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
+    .task-name { font-weight: 600; font-size: 0.86rem; }
+    .task-meta { font-size: 0.68rem; color: var(--text3); margin-top: 2px; }
     .task.done .task-name { text-decoration: line-through; color: var(--text3); }
 
-    /* Chapters */
-    .section-title {
-      font-size: 0.76rem; font-weight: 700; color: var(--purple);
-      text-transform: uppercase; letter-spacing: 0.7px;
-      margin: 16px 0 8px; display: flex; align-items: center; gap: 8px;
-    }
-    .section-title::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, var(--border2), transparent);
-    }
+    .section-block { margin-bottom: 6px; }
+    .section-header { display: flex; align-items: center; gap: 8px; padding: 10px 0 6px; cursor: pointer; user-select: none; }
+    .section-header .chevron { font-size: 0.7rem; color: var(--text3); transition: transform 0.25s ease; width: 14px; }
+    .section-header.collapsed .chevron { transform: rotate(-90deg); }
+    .section-title-text { font-size: 0.78rem; font-weight: 700; color: var(--purple); text-transform: uppercase; letter-spacing: 0.6px; flex: 1; }
+    .section-count { font-size: 0.68rem; color: var(--text3); background: var(--bg2); padding: 2px 8px; border-radius: 10px; }
+    .subject-block { margin-left: 8px; border-left: 2px solid var(--border); padding-left: 10px; margin-bottom: 4px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; }
+    .subject-block.collapsed { max-height: 0 !important; opacity: 0; margin: 0; padding: 0; border: none; }
+    .subject-header { display: flex; align-items: center; gap: 6px; padding: 8px 0 4px; cursor: pointer; }
+    .subject-name { font-size: 0.84rem; font-weight: 650; color: var(--accent2); flex: 1; }
+    .subject-meta { font-size: 0.66rem; color: var(--text3); }
     .chapter {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 0;
+      border-bottom: 1px solid rgba(28,38,57,0.8); transition: background 0.15s; animation: slideInLeft 0.3s ease both;
     }
     .chapter:last-child { border-bottom: none; }
-    .chapter-name { flex: 1; min-width: 140px; font-weight: 500; font-size: 0.86rem; }
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 3px 9px; border-radius: 20px;
-      font-size: 0.68rem; font-weight: 700;
-    }
+    .chapter-name { flex: 1; min-width: 120px; font-weight: 500; font-size: 0.82rem; }
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 0.66rem; font-weight: 700; }
     .badge-ok { background: var(--green-soft); color: #34d399; }
     .badge-warn { background: var(--orange-soft); color: #fbbf24; }
     .badge-over { background: var(--red-soft); color: #f87171; }
     .badge-done { background: var(--accent-soft); color: #60a5fa; }
-    .day-controls { display: flex; align-items: center; gap: 4px; }
-    .complete-note {
-      width: 100%;
-      background: var(--green-soft);
-      border: 1px solid rgba(16,185,129,0.2);
-      border-radius: 8px; padding: 8px 10px;
-      font-size: 0.78rem; color: #6ee7b7; margin-top: 2px;
-    }
-    .add-chapter-box {
-      background: var(--bg2); border: 1px dashed var(--border2);
-      border-radius: 12px; padding: 14px; margin-top: 12px;
-    }
+    .day-controls { display: flex; align-items: center; gap: 3px; }
+    .complete-note { width: 100%; background: var(--green-soft); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 7px 10px; font-size: 0.75rem; color: #6ee7b7; margin-top: 2px; }
+    .add-chapter-box { background: var(--bg2); border: 1px dashed var(--border2); border-radius: 12px; padding: 14px; margin-top: 12px; }
 
-    /* Alerts */
-    .alert {
-      display: flex; gap: 10px; align-items: flex-start;
-      padding: 11px 13px; border-radius: 12px;
-      margin-bottom: 8px; font-size: 0.82rem;
-      animation: slideIn 0.35s ease both;
-    }
-    .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .alert { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 0.8rem; animation: slideInLeft 0.35s ease both; position: relative; }
+    .alert-icon { font-size: 1.05rem; flex-shrink: 0; }
     .alert-danger { background: var(--red-soft); border: 1px solid rgba(239,68,68,0.22); }
     .alert-warn { background: var(--orange-soft); border: 1px solid rgba(245,158,11,0.22); }
     .alert-info { background: var(--accent-soft); border: 1px solid rgba(59,130,246,0.22); }
     .alert-success { background: var(--green-soft); border: 1px solid rgba(16,185,129,0.22); }
     .alert-purple { background: var(--purple-soft); border: 1px solid rgba(139,92,246,0.22); }
     .alert b { font-weight: 600; }
-    .alert-custom { position: relative; }
-    .alert-delete {
-      position: absolute; right: 10px; top: 10px;
-      background: transparent; border: none; color: var(--text3);
-      cursor: pointer; font-size: 0.85rem; padding: 2px 6px;
-    }
-    .alert-delete:hover { color: var(--red); }
+    .alert-delete { position: absolute; right: 8px; top: 8px; background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; }
+    .alert-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
 
-    /* Charts / graphs */
-    .graph-tabs {
-      display: flex; gap: 6px; margin-bottom: 14px;
-    }
-    .graph-tab {
-      padding: 6px 12px; border-radius: 8px; font-size: 0.74rem; font-weight: 600;
-      background: var(--bg2); border: 1px solid var(--border); color: var(--text3);
-      cursor: pointer; font-family: inherit; transition: all 0.15s;
-    }
+    .graph-tabs { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+    .graph-tab { padding: 6px 11px; border-radius: 8px; font-size: 0.72rem; font-weight: 600; background: var(--bg2); border: 1px solid var(--border); color: var(--text3); cursor: pointer; font-family: inherit; transition: all 0.15s; }
     .graph-tab.active { background: var(--accent-soft); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
-    .bar-chart {
-      display: flex; align-items: flex-end; gap: 6px;
-      height: 140px; padding: 8px 0 0;
-    }
-    .bar-col {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-      min-width: 0;
-    }
-    .bar-col-fill {
-      width: 100%; max-width: 36px; border-radius: 6px 6px 2px 2px;
-      background: linear-gradient(180deg, #60a5fa, #3b82f6);
-      transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      min-height: 2px;
-    }
-    .bar-col-label {
-      font-size: 0.62rem; color: var(--text3); font-weight: 500;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-    }
-    .bar-col-val { font-size: 0.65rem; color: var(--text2); font-weight: 600; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 5px; height: 130px; padding: 6px 0 0; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+    .bar-col-fill { width: 100%; max-width: 32px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, #60a5fa, #3b82f6); transform-origin: bottom; animation: barGrow 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; min-height: 2px; }
+    .bar-col-label { font-size: 0.6rem; color: var(--text3); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .bar-col-val { font-size: 0.62rem; color: var(--text2); font-weight: 600; }
 
-    /* Pie */
-    .pie-wrap { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; padding: 8px 0; }
-    .pie {
-      width: 140px; height: 140px; border-radius: 50%;
-      position: relative; box-shadow: 0 0 0 5px var(--bg2);
-      transition: transform 0.3s;
-    }
-    .pie:hover { transform: scale(1.03); }
-    .pie-inner {
-      position: absolute; inset: 16px; background: var(--card);
-      border-radius: 50%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-    }
-    .pie-pct { font-size: 1.4rem; font-weight: 800; color: #34d399; }
-    .pie-label { font-size: 0.66rem; color: var(--text3); }
-    .legend { font-size: 0.8rem; }
-    .legend-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
-    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .pie-wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center; padding: 6px 0; }
+    .pie { width: 130px; height: 130px; border-radius: 50%; position: relative; box-shadow: 0 0 0 5px var(--bg2); transition: transform 0.3s; }
+    .pie:hover { transform: scale(1.04); }
+    .pie-inner { position: absolute; inset: 15px; background: var(--card); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .pie-pct { font-size: 1.3rem; font-weight: 800; color: #34d399; }
+    .pie-label { font-size: 0.64rem; color: var(--text3); }
+    .legend { font-size: 0.78rem; }
+    .legend-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-    /* Subject bars */
-    .bar-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.8rem; }
-    .bar-label { width: 95px; font-weight: 500; color: var(--text2); }
+    .bar-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; font-size: 0.78rem; }
+    .bar-label { width: 88px; font-weight: 500; color: var(--text2); flex-shrink: 0; }
     .bar-track { flex: 1; height: 7px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-    .bar-val { width: 40px; text-align: right; font-size: 0.72rem; color: var(--text3); font-weight: 600; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.45s ease; }
+    .bar-val { width: 38px; text-align: right; font-size: 0.7rem; color: var(--text3); font-weight: 600; flex-shrink: 0; }
 
-    /* Gallery */
-    .pic-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
-    }
-    .pic-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden;
-      transition: border-color 0.2s, transform 0.2s;
-    }
+    .pic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .pic-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; animation: scaleIn 0.35s ease both; }
     .pic-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-    .pic-card img {
-      width: 100%; height: 110px; object-fit: cover; display: block;
-      background: #0f172a;
-    }
-    .pic-info { padding: 8px 10px; }
-    .pic-title { font-weight: 600; font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pic-note { font-size: 0.68rem; color: var(--text3); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pic-card img { width: 100%; height: 100px; object-fit: cover; display: block; background: #0f172a; }
+    .pic-info { padding: 8px; }
+    .pic-title { font-weight: 600; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pic-note { font-size: 0.66rem; color: var(--text3); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-    /* Forms */
     input[type="text"], input[type="url"], input[type="number"], input[type="time"], select, textarea {
-      width: 100%; background: var(--bg2); border: 1px solid var(--border);
-      color: var(--text); padding: 10px 12px; border-radius: 9px;
-      font-size: 0.86rem; font-family: inherit; margin-top: 6px;
-      transition: border-color 0.15s;
+      width: 100%; background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 12px; border-radius: 9px; font-size: 16px; font-family: inherit; margin-top: 5px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    textarea { resize: vertical; min-height: 70px; }
-    .form-label { font-size: 0.72rem; font-weight: 600; color: var(--text3); margin-top: 10px; display: block; }
+    textarea { resize: vertical; min-height: 68px; font-size: 0.88rem; }
+    .form-label { font-size: 0.7rem; font-weight: 600; color: var(--text3); margin-top: 10px; display: block; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .form-row > * { flex: 1; min-width: 120px; }
+    .form-row > * { flex: 1; min-width: 110px; }
 
-    .note-item {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 9px; padding: 10px 12px; margin-top: 8px;
-      font-size: 0.78rem; color: var(--text2);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-    }
-    .stat {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 10px; text-align: center;
-      transition: transform 0.2s, border-color 0.2s;
-    }
+    .note-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; margin-top: 8px; font-size: 0.76rem; color: var(--text2); animation: slideInLeft 0.3s ease both; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
+    .stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; transition: transform 0.2s, border-color 0.2s; }
     .stat:hover { transform: translateY(-2px); border-color: var(--border2); }
-    .stat-num { font-size: 1.35rem; font-weight: 800; color: #93c5fd; }
-    .stat-label { font-size: 0.66rem; color: var(--text3); margin-top: 3px; font-weight: 500; }
+    .stat-num { font-size: 1.25rem; font-weight: 800; color: #93c5fd; }
+    .stat-label { font-size: 0.64rem; color: var(--text3); margin-top: 2px; font-weight: 500; }
 
-    .footer {
-      text-align: center; font-size: 0.68rem; color: var(--text3);
-      margin-top: 28px; line-height: 1.7;
-    }
-
+    .footer { text-align: center; font-size: 0.66rem; color: var(--text3); margin-top: 24px; line-height: 1.7; }
     .toast {
-      position: fixed; bottom: 28px; left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #1e293b; color: white;
-      padding: 11px 20px; border-radius: 12px;
-      font-size: 0.86rem; font-weight: 500; z-index: 200;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-      opacity: 0; transition: all 0.3s ease;
-      pointer-events: none; max-width: 90%; text-align: center;
-      border: 1px solid var(--border2);
+      position: fixed; bottom: calc(24px + var(--safe-bottom)); left: 50%;
+      transform: translateX(-50%) translateY(24px); background: #1e293b; color: white;
+      padding: 11px 18px; border-radius: 12px; font-size: 0.84rem; font-weight: 500; z-index: 200;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5); opacity: 0; transition: all 0.3s ease;
+      pointer-events: none; max-width: 88%; text-align: center; border: 1px solid var(--border2);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
     .hidden { display: none !important; }
-    .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .actions-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+    @media (max-width: 560px) {
+      .app { padding: 12px 10px calc(40px + var(--safe-bottom)); }
+      .header { padding: 16px 12px 14px; border-radius: 16px; }
+      .digit { width: 24px; height: 34px; } .digit span { font-size: 1.3rem; } .colon { font-size: 1.15rem; }
+      .digital-clock-box { padding: 11px 14px 10px; }
+      .now-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .now-time { min-width: auto; width: 100%; text-align: left; }
+      .chapter { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .chapter-name { min-width: 100%; } .day-controls { order: 2; }
+      .bar-chart { height: 110px; gap: 3px; } .bar-col-fill { max-width: 28px; }
+      .pie { width: 110px; height: 110px; } .pie-inner { inset: 13px; } .pie-pct { font-size: 1.15rem; }
+      .form-row { flex-direction: column; } .form-row > * { min-width: 100%; }
+      .notion-banner { padding: 10px 12px; }
+      .tab { padding: 7px 10px; font-size: 0.7rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-8px); }
-      to { opacity: 1; transform: translateX(0); }
+    @media (max-width: 360px) {
+      .digit { width: 22px; height: 30px; } .digit span { font-size: 1.15rem; }
+      .header h1 { font-size: 1.1rem; }
     }
-
-    @media (max-width: 520px) {
-      .app { padding: 12px 12px 44px; }
-      .digit { width: 26px; height: 38px; }
-      .digit span { font-size: 1.4rem; }
-      .colon { font-size: 1.2rem; }
-      .digital-clock-box { padding: 12px 16px 10px; }
-      .now-card { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .now-time { min-width: auto; }
-      .chapter { flex-direction: column; align-items: flex-start; }
-      .header h1 { font-size: 1.2rem; }
-      .bar-chart { height: 120px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-
-    <!-- HEADER -->
     <header class="header">
       <div class="header-title">Banking & Insurance Exams</div>
       <h1>2027 Study Tracker</h1>
@@ -532,20 +317,11 @@
         <div class="digital-clock-box">
           <div class="clock-inner">
             <div class="clock-digits" id="clockDigits">
-              <div class="digit-group">
-                <div class="digit" id="dH1"><span>0</span></div>
-                <div class="digit" id="dH2"><span>0</span></div>
-              </div>
+              <div class="digit-group"><div class="digit" id="dH1"><span>0</span></div><div class="digit" id="dH2"><span>0</span></div></div>
               <div class="colon">:</div>
-              <div class="digit-group">
-                <div class="digit" id="dM1"><span>0</span></div>
-                <div class="digit" id="dM2"><span>0</span></div>
-              </div>
+              <div class="digit-group"><div class="digit" id="dM1"><span>0</span></div><div class="digit" id="dM2"><span>0</span></div></div>
               <div class="colon">:</div>
-              <div class="digit-group">
-                <div class="digit" id="dS1"><span>0</span></div>
-                <div class="digit" id="dS2"><span>0</span></div>
-              </div>
+              <div class="digit-group"><div class="digit" id="dS1"><span>0</span></div><div class="digit" id="dS2"><span>0</span></div></div>
             </div>
             <div class="clock-ampm" id="clockAmPm">AM</div>
             <div class="clock-meta" id="clockMeta"></div>
@@ -555,7 +331,15 @@
       <div class="streak-pill" id="streakBadge">🔥 0 day streak</div>
     </header>
 
-    <!-- NOW -->
+    <a class="notion-banner" href="https://app.notion.com/p/Study-Plan-2027-2fe532e89fe88006b435f0ef7f0d70c4?v=2fd532e89fe8803880f4000c2d942210&source=copy_link" target="_blank" rel="noopener">
+      <div class="notion-icon">📓</div>
+      <div class="notion-text">
+        <div class="notion-title">Open Notion Study Plan 2027</div>
+        <div class="notion-sub">Full plan · section-wise · subject-wise roadmap</div>
+      </div>
+      <span class="notion-arrow">↗</span>
+    </a>
+
     <div class="now-card" id="nowBox">
       <div class="now-time" id="nowTimeLabel">--:--</div>
       <div class="now-content">
@@ -565,7 +349,6 @@
       </div>
     </div>
 
-    <!-- DATE NAV -->
     <div class="date-nav">
       <button class="btn btn-ghost btn-sm" onclick="changeDate(-1)">← Prev</button>
       <div class="date-info">
@@ -576,28 +359,24 @@
       <button class="btn btn-sm" onclick="goToday()">Today</button>
     </div>
 
-    <!-- TOP ALERTS -->
     <div id="remindersTop"></div>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <button class="tab active" data-tab="daily" onclick="switchTab('daily')">📅 Daily</button>
-      <button class="tab" data-tab="chapters" onclick="switchTab('chapters')">📚 Chapters</button>
-      <button class="tab" data-tab="progress" onclick="switchTab('progress')">📊 Progress</button>
-      <button class="tab" data-tab="gallery" onclick="switchTab('gallery')">🖼️ Gallery</button>
-      <button class="tab" data-tab="shift" onclick="switchTab('shift')">⏭ Shift</button>
-      <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">🔔 Alerts</button>
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab active" data-tab="daily" onclick="switchTab('daily')">📅 Daily</button>
+        <button class="tab" data-tab="chapters" onclick="switchTab('chapters')">📚 Chapters</button>
+        <button class="tab" data-tab="progress" onclick="switchTab('progress')">📊 Progress</button>
+        <button class="tab" data-tab="gallery" onclick="switchTab('gallery')">🖼️ Gallery</button>
+        <button class="tab" data-tab="shift" onclick="switchTab('shift')">⏭ Shift</button>
+        <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">🔔 Alerts</button>
+      </div>
     </div>
 
-    <!-- ========== DAILY ========== -->
     <div id="tab-daily">
       <div class="card">
         <div class="card-header">
-          <div>
-            <div class="card-title">Today's Targets</div>
-            <div class="card-sub">Complete required tasks for streak</div>
-          </div>
-          <div id="dailyPct" style="font-size:1.1rem;font-weight:800;color:#34d399">0%</div>
+          <div><div class="card-title">Today's Targets</div><div class="card-sub">Complete required tasks for streak</div></div>
+          <div id="dailyPct" style="font-size:1.05rem;font-weight:800;color:#34d399">0%</div>
         </div>
         <div class="progress-track"><div class="progress-fill" id="dailyProgress" style="width:0%"></div></div>
         <div id="dailyTasks"></div>
@@ -615,54 +394,40 @@
       </div>
     </div>
 
-    <!-- ========== CHAPTERS ========== -->
     <div id="tab-chapters" class="hidden">
       <div class="card">
         <div class="card-title">Chapter Tracker</div>
-        <div class="card-sub" style="margin-bottom:8px">+ / − days · Mark Done · Add your own chapters</div>
+        <div class="card-sub" style="margin-bottom:6px">Section → Subject → Topics · +/− days · Done · Add your own</div>
         <div id="chapterList"></div>
-
         <div class="add-chapter-box">
-          <div class="card-title" style="font-size:0.88rem;margin-bottom:6px">Add Chapter Manually</div>
+          <div class="card-title" style="font-size:0.86rem;margin-bottom:6px">Add Topic Manually</div>
           <div class="form-row">
-            <div>
-              <label class="form-label">Subject</label>
-              <select id="newChSubject">
-                <option value="Quant">Quant</option>
-                <option value="Reasoning">Reasoning</option>
-                <option value="English">English</option>
-                <option value="Banking">Banking</option>
-                <option value="Calculations">Calculations</option>
-                <option value="Mock">Mock</option>
-              </select>
+            <div><label class="form-label">Section</label>
+              <select id="newChSection"><option value="Prelims">Prelims</option><option value="Mains">Mains</option><option value="Foundation">Foundation</option></select>
             </div>
-            <div>
-              <label class="form-label">Est. Days</label>
-              <input type="number" id="newChDays" min="1" max="90" value="7" />
+            <div><label class="form-label">Subject</label>
+              <select id="newChSubject"><option value="Quant">Quant</option><option value="Reasoning">Reasoning</option><option value="English">English</option><option value="Banking">Banking</option><option value="Calculations">Calculations</option><option value="Mock">Mock</option><option value="GA">GA / CA</option></select>
             </div>
           </div>
-          <label class="form-label">Chapter Name</label>
-          <input type="text" id="newChName" placeholder="e.g. Data Interpretation – Caselets" />
-          <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addChapter()">＋ Add Chapter</button>
+          <div class="form-row">
+            <div><label class="form-label">Est. Days</label><input type="number" id="newChDays" min="1" max="90" value="7" /></div>
+            <div><label class="form-label">Subsection (optional)</label><input type="text" id="newChSub" placeholder="e.g. Arithmetic, DI" /></div>
+          </div>
+          <label class="form-label">Topic Name</label>
+          <input type="text" id="newChName" placeholder="e.g. Percentage + Ratio + Average" />
+          <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addChapter()">＋ Add Topic</button>
         </div>
       </div>
     </div>
 
-    <!-- ========== PROGRESS ========== -->
     <div id="tab-progress" class="hidden">
       <div class="card">
         <div class="card-title">Overall Completion</div>
         <div class="pie-wrap">
-          <div class="pie" id="pieChart">
-            <div class="pie-inner">
-              <div class="pie-pct" id="piePercent">0%</div>
-              <div class="pie-label">Complete</div>
-            </div>
-          </div>
+          <div class="pie" id="pieChart"><div class="pie-inner"><div class="pie-pct" id="piePercent">0%</div><div class="pie-label">Complete</div></div></div>
           <div class="legend" id="pieLegend"></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Activity Graph</div>
         <div class="card-sub">Tasks completed over time</div>
@@ -673,125 +438,108 @@
         </div>
         <div class="bar-chart" id="activityChart"></div>
       </div>
-
-      <div class="card">
-        <div class="card-title">Subject-wise Progress</div>
-        <div id="subjectBars" style="margin-top:8px"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Completion Notes</div>
-        <div id="completionNotes" style="margin-top:8px"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Quick Stats</div>
-        <div class="stats-grid" id="statsGrid" style="margin-top:10px"></div>
-      </div>
+      <div class="card"><div class="card-title">Subject-wise Progress</div><div id="subjectBars" style="margin-top:6px"></div></div>
+      <div class="card"><div class="card-title">Completion Notes</div><div id="completionNotes" style="margin-top:6px"></div></div>
+      <div class="card"><div class="card-title">Quick Stats</div><div class="stats-grid" id="statsGrid" style="margin-top:8px"></div></div>
     </div>
 
-    <!-- ========== GALLERY ========== -->
     <div id="tab-gallery" class="hidden">
       <div class="card">
         <div class="card-title">Cloud Gallery</div>
-        <div class="card-sub">Paste photo links from your cloud storage</div>
-        <label class="form-label">Image URL (Drive / Dropbox / Imgur / any public link)</label>
-        <input type="url" id="picUrl" placeholder="https://..." />
-        <label class="form-label">Caption / Note</label>
-        <input type="text" id="picNote" placeholder="Finished Puzzles · feeling strong" />
-        <label class="form-label">Tag (optional)</label>
-        <input type="text" id="picTag" placeholder="e.g. Quant, Mock, Milestone" />
+        <div class="card-sub">Paste photo links from Drive / Dropbox / Imgur</div>
+        <label class="form-label">Image URL</label><input type="url" id="picUrl" placeholder="https://..." />
+        <label class="form-label">Caption</label><input type="text" id="picNote" placeholder="Finished Puzzles · feeling strong" />
+        <label class="form-label">Tag (optional)</label><input type="text" id="picTag" placeholder="Quant, Mock, Milestone" />
         <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addPicture()">Add Photo</button>
-        <p style="font-size:0.72rem;color:var(--text3);margin-top:10px;line-height:1.5">
-          💡 Tip: Use a public share link. Cloud folder sync can be added later — just tell me which service (Google Drive, Dropbox, OneDrive…) when you’re ready.
-        </p>
+        <p style="font-size:0.7rem;color:var(--text3);margin-top:10px;line-height:1.5">💡 Cloud folder auto-sync can be added later — tell me Google Drive / Dropbox / OneDrive when ready.</p>
       </div>
-      <div class="card">
-        <div class="card-title">Your Photos</div>
-        <div class="pic-grid" id="picGallery" style="margin-top:10px"></div>
-      </div>
+      <div class="card"><div class="card-title">Your Photos</div><div class="pic-grid" id="picGallery" style="margin-top:8px"></div></div>
     </div>
 
-    <!-- ========== SHIFT ========== -->
     <div id="tab-shift" class="hidden">
       <div class="card">
-        <div class="card-title">Shift Task to Tomorrow</div>
-        <div class="card-sub">From daily list or create a custom task</div>
-
-        <label class="form-label">From Daily Targets</label>
-        <select id="shiftTaskSelect"></select>
-
-        <div style="margin:12px 0 4px;font-size:0.72rem;font-weight:600;color:var(--text3)">— OR custom task —</div>
-        <label class="form-label">Custom Task Name</label>
-        <input type="text" id="shiftCustomTask" placeholder="e.g. DI Practice set 3" />
-        <label class="form-label">Preferred Time (optional)</label>
-        <input type="time" id="shiftCustomTime" />
-
-        <label class="form-label">Reason</label>
-        <input type="text" id="shiftReason" placeholder="Phone, tired, coaching overtime…" />
+        <div class="card-title">Shift to Tomorrow</div>
+        <div class="card-sub">Daily target or custom task + optional time</div>
+        <label class="form-label">From Daily Targets</label><select id="shiftTaskSelect"></select>
+        <div style="margin:10px 0 2px;font-size:0.7rem;font-weight:600;color:var(--text3)">— OR custom —</div>
+        <label class="form-label">Custom Task</label><input type="text" id="shiftCustomTask" placeholder="e.g. DI Practice set 3" />
+        <label class="form-label">Preferred Time (optional)</label><input type="time" id="shiftCustomTime" />
+        <label class="form-label">Reason</label><input type="text" id="shiftReason" placeholder="Phone, tired, coaching overtime…" />
         <button class="btn btn-orange btn-block" style="margin-top:12px" onclick="doShift()">Shift to Next Day</button>
       </div>
-      <div class="card">
-        <div class="card-title">Shift History</div>
-        <div id="shiftHistory" style="margin-top:8px"></div>
-      </div>
+      <div class="card"><div class="card-title">Shift History</div><div id="shiftHistory" style="margin-top:6px"></div></div>
     </div>
 
-    <!-- ========== ALERTS ========== -->
     <div id="tab-alerts" class="hidden">
       <div class="card">
         <div class="card-title">Add Custom Alert</div>
-        <div class="card-sub">Personal reminders that stay until you remove them</div>
-        <label class="form-label">Title</label>
-        <input type="text" id="customAlertTitle" placeholder="e.g. Revise RBI rates" />
-        <label class="form-label">Message</label>
-        <input type="text" id="customAlertMsg" placeholder="Short note…" />
+        <div class="card-sub">Personal reminders until you remove them</div>
+        <label class="form-label">Title</label><input type="text" id="customAlertTitle" placeholder="e.g. Revise RBI rates" />
+        <label class="form-label">Message</label><input type="text" id="customAlertMsg" placeholder="Short note…" />
         <label class="form-label">Type</label>
-        <select id="customAlertType">
-          <option value="info">Info</option>
-          <option value="warn">Warning</option>
-          <option value="danger">Urgent</option>
-          <option value="purple">Focus</option>
-          <option value="success">Positive</option>
-        </select>
+        <select id="customAlertType"><option value="info">Info</option><option value="warn">Warning</option><option value="danger">Urgent</option><option value="purple">Focus</option><option value="success">Positive</option></select>
         <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addCustomAlert()">＋ Add Alert</button>
       </div>
-      <div class="card">
-        <div class="card-title">All Active Reminders</div>
-        <div id="allReminders" style="margin-top:10px"></div>
-      </div>
+      <div class="card"><div class="card-title">All Active Reminders</div><div id="allReminders" style="margin-top:8px"></div></div>
     </div>
 
     <div class="footer">
-      Data stored locally in your browser · Coaching 9:30–11:30 · Max 20 min nap · Sleep by 11:30 PM<br>
-      Open this file every day after coaching
+      Data stored locally · Coaching 9:30–11:30 · Max 20 min nap · Sleep by 11:30 PM<br>
+      <a href="https://app.notion.com/p/Study-Plan-2027-2fe532e89fe88006b435f0ef7f0d70c4?v=2fd532e89fe8803880f4000c2d942210&source=copy_link" target="_blank" rel="noopener" style="color:#a78bfa;text-decoration:none">Notion Study Plan 2027 ↗</a>
     </div>
   </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
-    const SUBJECTS = ['Quant','Reasoning','English','Banking','Calculations','Mock'];
-    const DEFAULT_CHAPTERS = [
-      {id:'q1',subject:'Quant',name:'Simplification / Approx / Number Series',estimated:8},
-      {id:'q2',subject:'Quant',name:'Quadratic Equations',estimated:5},
-      {id:'q3',subject:'Quant',name:'Percentage + Ratio + Average',estimated:12},
-      {id:'q4',subject:'Quant',name:'Profit-Loss + SI-CI',estimated:10},
-      {id:'q5',subject:'Quant',name:'Time & Work + Pipes',estimated:8},
-      {id:'q6',subject:'Quant',name:'Time-Speed-Distance + Boats',estimated:8},
-      {id:'q7',subject:'Quant',name:'Mixture + Partnership + Ages',estimated:7},
-      {id:'q8',subject:'Quant',name:'DI (All types) + Caselet',estimated:18},
-      {id:'r1',subject:'Reasoning',name:'Inequality + Syllogism + Coding',estimated:9},
-      {id:'r2',subject:'Reasoning',name:'Blood Relation + Direction + Ranking',estimated:8},
-      {id:'r3',subject:'Reasoning',name:'Puzzles & Seating (Linear → Mixed)',estimated:30},
-      {id:'r4',subject:'Reasoning',name:'Input-Output + Critical Reasoning',estimated:8},
-      {id:'e1',subject:'English',name:'Grammar Basics + Error Spotting',estimated:18},
-      {id:'e2',subject:'English',name:'Cloze + Fillers + Para Jumble',estimated:12},
-      {id:'e3',subject:'English',name:'RC + Vocab (Daily Editorial)',estimated:25},
-      {id:'b1',subject:'Banking',name:'Banking Terms + RBI + Monetary Policy',estimated:20},
-      {id:'b2',subject:'Banking',name:'Current Affairs (Daily + Monthly)',estimated:40},
-      {id:'c1',subject:'Calculations',name:'Tables 12-30 + Squares + Cubes',estimated:40},
-    ];
+    const SECTIONS = {
+      'Foundation': { order: 0, subjects: { 'Calculations': [{id:'c1', name:'Tables 12–30 + Squares + Cubes', estimated:40, sub:'Speed Math'}] } },
+      'Prelims': { order: 1, subjects: {
+        'Quant': [
+          {id:'q1', name:'Simplification / Approx / Number Series', estimated:8, sub:'Basics'},
+          {id:'q2', name:'Quadratic Equations', estimated:5, sub:'Basics'},
+          {id:'q3', name:'Percentage + Ratio + Average', estimated:12, sub:'Arithmetic'},
+          {id:'q4', name:'Profit-Loss + SI-CI', estimated:10, sub:'Arithmetic'},
+          {id:'q5', name:'Time & Work + Pipes', estimated:8, sub:'Arithmetic'},
+          {id:'q6', name:'Time-Speed-Distance + Boats', estimated:8, sub:'Arithmetic'},
+          {id:'q7', name:'Mixture + Partnership + Ages', estimated:7, sub:'Arithmetic'},
+          {id:'q8', name:'DI (Tables, Bar, Line, Pie) + Caselet', estimated:18, sub:'DI'}
+        ],
+        'Reasoning': [
+          {id:'r1', name:'Inequality + Syllogism + Coding', estimated:9, sub:'Core'},
+          {id:'r2', name:'Blood Relation + Direction + Ranking', estimated:8, sub:'Core'},
+          {id:'r3', name:'Puzzles & Seating (Linear → Mixed)', estimated:30, sub:'Puzzles'},
+          {id:'r4', name:'Input-Output + Critical Reasoning', estimated:8, sub:'Advanced'}
+        ],
+        'English': [
+          {id:'e1', name:'Grammar Basics + Error Spotting', estimated:18, sub:'Grammar'},
+          {id:'e2', name:'Cloze + Fillers + Para Jumble', estimated:12, sub:'Verbal'},
+          {id:'e3', name:'RC + Vocab (Daily Editorial)', estimated:25, sub:'RC & Vocab'}
+        ],
+        'Banking': [
+          {id:'b1', name:'Banking Terms + RBI + Monetary Policy', estimated:20, sub:'Static'},
+          {id:'b2', name:'Current Affairs (Daily + Monthly)', estimated:40, sub:'CA'}
+        ]
+      }},
+      'Mains': { order: 2, subjects: {
+        'Quant': [
+          {id:'qm1', name:'Advanced DI + Missing / Caselet', estimated:15, sub:'Advanced DI'},
+          {id:'qm2', name:'Data Sufficiency + Quantity Comparison', estimated:8, sub:'Advanced'}
+        ],
+        'Reasoning': [
+          {id:'rm1', name:'High-level Puzzles + Floor / Scheduling', estimated:20, sub:'Advanced Puzzles'},
+          {id:'rm2', name:'Critical Reasoning + Statement based', estimated:10, sub:'CR'}
+        ],
+        'English': [
+          {id:'em1', name:'Advanced RC + Inference', estimated:12, sub:'Advanced'},
+          {id:'em2', name:'Descriptive (Essay / Letter basics)', estimated:10, sub:'Descriptive'}
+        ],
+        'GA': [
+          {id:'g1', name:'Banking Awareness Deep + Schemes', estimated:15, sub:'Banking'},
+          {id:'g2', name:'Economy + Budget + Reports', estimated:12, sub:'Economy'}
+        ]
+      }}
+    };
+    const SUBJECT_ORDER = ['Calculations','Quant','Reasoning','English','Banking','GA','Mock'];
     const DAILY_TEMPLATE = [
       {id:'calc',title:'🧮 Calculations (Tables/Squares/Cubes) 10-15 min',subject:'Calculations',required:true},
       {id:'eng',title:'📘 English – Editorial + Grammar 60-75 min',subject:'English',required:true},
@@ -807,7 +555,7 @@
       {start:7,end:8.25,title:'Calculations + Editorial',desc:'Tables/Squares 10-15 min + one editorial.'},
       {start:8.25,end:13,title:'Coaching + Travel',desc:'Coaching 9:30–11:30. Stay focused.'},
       {start:13,end:13.4,title:'Power Nap (Max 20 min)',desc:'Set alarm. Long sleep kills the day.'},
-      {start:13.4,end:15.5,title:'Quant Practice',desc:'Kaushik concepts + 40-60 questions.'},
+      {start:13.4,end:15.5,title:'Quant Practice',desc:'Concepts + 40-60 questions.'},
       {start:15.5,end:15.75,title:'Short Break',desc:'Stretch, water, light snack.'},
       {start:15.75,end:17.5,title:'Reasoning Practice',desc:'2-3 full puzzles + other topics.'},
       {start:17.5,end:18,title:'Break / Walk',desc:'Fresh air and short rest.'},
@@ -831,17 +579,9 @@
     ];
 
     let state = {
-      currentDate: getTodayStr(),
-      chapters: [],
-      dailyLogs: {},
-      shifts: [],
-      lastSubjectActivity: {},
-      streak: 0,
-      lastStreakDate: null,
-      pictures: [],
-      completionNotes: {},
-      customAlerts: [],
-      graphRange: 'day'
+      currentDate: getTodayStr(), chapters: [], dailyLogs: {}, shifts: [], lastSubjectActivity: {},
+      streak: 0, lastStreakDate: null, pictures: [], completionNotes: {}, customAlerts: [],
+      graphRange: 'day', collapsedSections: {}, collapsedSubjects: {}
     };
 
     function getTodayStr(){ return new Date().toISOString().slice(0,10); }
@@ -852,65 +592,62 @@
     function getLog(date){ if(!state.dailyLogs[date]) state.dailyLogs[date]={tasks:{},note:''}; return state.dailyLogs[date]; }
     function uid(){ return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
+    function buildDefaultChapters(){
+      const list=[];
+      Object.entries(SECTIONS).forEach(([section, data])=>{
+        Object.entries(data.subjects).forEach(([subject, topics])=>{
+          topics.forEach(t=> list.push({ id: t.id, section, subject, sub: t.sub||'', name: t.name, estimated: t.estimated, daysSpent: 0, done: false }));
+        });
+      });
+      return list;
+    }
+
     function loadState(){
       try{
-        const raw=localStorage.getItem('bankTracker2027_pro_v2');
+        const raw=localStorage.getItem('bankTracker2027_v3');
         if(raw) state=Object.assign(state, JSON.parse(raw));
-        if(!state.chapters||!state.chapters.length)
-          state.chapters=DEFAULT_CHAPTERS.map(c=>({...c,daysSpent:0,done:false}));
+        if(!state.chapters||!state.chapters.length) state.chapters=buildDefaultChapters();
+        state.chapters=state.chapters.map(c=>({ section: c.section||'Prelims', sub: c.sub||'', ...c }));
         if(!state.dailyLogs) state.dailyLogs={};
         if(!state.shifts) state.shifts=[];
         if(!state.lastSubjectActivity) state.lastSubjectActivity={};
         if(!state.pictures) state.pictures=[];
         if(!state.completionNotes) state.completionNotes={};
         if(!state.customAlerts) state.customAlerts=[];
+        if(!state.collapsedSections) state.collapsedSections={};
+        if(!state.collapsedSubjects) state.collapsedSubjects={};
         if(!state.currentDate) state.currentDate=getTodayStr();
         if(typeof state.streak!=='number') state.streak=0;
         if(!state.graphRange) state.graphRange='day';
-      }catch(e){
-        state.chapters=DEFAULT_CHAPTERS.map(c=>({...c,daysSpent:0,done:false}));
-      }
+      }catch(e){ state.chapters=buildDefaultChapters(); }
     }
-    function saveState(){ localStorage.setItem('bankTracker2027_pro_v2',JSON.stringify(state)); }
+    function saveState(){ localStorage.setItem('bankTracker2027_v3',JSON.stringify(state)); }
 
     function showToast(msg){
       const t=document.getElementById('toast');
-      t.textContent=msg;
-      t.classList.add('show');
+      t.textContent=msg; t.classList.add('show');
       setTimeout(()=>t.classList.remove('show'),2200);
     }
 
-    // Clock
     function setDigit(id, value) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const span = el.querySelector('span');
-      const strVal = String(value);
+      const el = document.getElementById(id); if (!el) return;
+      const span = el.querySelector('span'); const strVal = String(value);
       if (span.textContent !== strVal) {
-        span.textContent = strVal;
-        el.classList.remove('flip');
-        void el.offsetWidth;
-        el.classList.add('flip');
-        setTimeout(() => el.classList.remove('flip'), 320);
+        span.textContent = strVal; el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip');
+        setTimeout(() => el.classList.remove('flip'), 300);
       }
     }
 
     function updateClock(){
-      const now = new Date();
-      let h = now.getHours();
-      const mins = now.getMinutes();
-      const secs = now.getSeconds();
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      const h12 = h % 12 ? h % 12 : 12;
-      const hStr = String(h12).padStart(2,'0');
-      const mStr = String(mins).padStart(2,'0');
-      const sStr = String(secs).padStart(2,'0');
+      const now = new Date(); let h = now.getHours();
+      const mins = now.getMinutes(), secs = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM'; const h12 = h % 12 ? h % 12 : 12;
+      const hStr = String(h12).padStart(2,'0'), mStr = String(mins).padStart(2,'0'), sStr = String(secs).padStart(2,'0');
       setDigit('dH1', hStr[0]); setDigit('dH2', hStr[1]);
       setDigit('dM1', mStr[0]); setDigit('dM2', mStr[1]);
       setDigit('dS1', sStr[0]); setDigit('dS2', sStr[1]);
       document.getElementById('clockAmPm').textContent = ampm;
-      document.getElementById('clockMeta').textContent =
-        now.toLocaleDateString('en-IN',{weekday:'long', day:'numeric', month:'short', year:'numeric'});
+      document.getElementById('clockMeta').textContent = now.toLocaleDateString('en-IN',{weekday:'long', day:'numeric', month:'short', year:'numeric'});
       updateNowDoing(now);
     }
 
@@ -919,11 +656,7 @@
       const schedule=isWeekend(getTodayStr())?WEEKEND_SCHEDULE:WEEKDAY_SCHEDULE;
       let current=schedule[0];
       for(const slot of schedule){ if(hours>=slot.start&&hours<slot.end){ current=slot; break; } }
-      const fmt=(h,m)=>{
-        const ap=h>=12?'PM':'AM';
-        let hh=h%12; hh=hh?hh:12;
-        return `${hh}:${String(m).padStart(2,'0')} ${ap}`;
-      };
+      const fmt=(h,m)=>{ const ap=h>=12?'PM':'AM'; let hh=h%12; hh=hh?hh:12; return `${hh}:${String(m).padStart(2,'0')} ${ap}`; };
       const sH=Math.floor(current.start), sM=Math.round((current.start%1)*60);
       const eH=Math.floor(current.end), eM=Math.round((current.end%1)*60);
       document.getElementById('nowTimeLabel').textContent=`${fmt(sH,sM)} – ${fmt(eH,eM)}`;
@@ -932,8 +665,7 @@
     }
 
     function updateStreak(){
-      const today=getTodayStr();
-      const log=getLog(today);
+      const today=getTodayStr(); const log=getLog(today);
       const reqDone=DAILY_TEMPLATE.filter(t=>t.required&&log.tasks[t.id]).length;
       const reqTotal=DAILY_TEMPLATE.filter(t=>t.required).length;
       if(reqDone>=reqTotal&&reqTotal>0){
@@ -946,31 +678,20 @@
     }
 
     function generateReminders(){
-      const list=[];
-      const today=state.currentDate;
-
-      // Custom alerts first
-      (state.customAlerts||[]).forEach((a,i)=>{
-        list.push({type:a.type||'info',icon:a.icon||'🔔',title:a.title,msg:a.msg,custom:true,idx:i});
-      });
-
+      const list=[]; const today=state.currentDate;
+      (state.customAlerts||[]).forEach((a,i)=> list.push({type:a.type||'info',icon:a.icon||'🔔',title:a.title,msg:a.msg,custom:true,idx:i}));
       state.chapters.forEach(ch=>{
         if(ch.done) return;
         const r=ch.daysSpent/(ch.estimated||1);
         if(r>=1.5) list.push({type:'danger',icon:'🚨',title:`Too many days on ${ch.name}`,msg:`${ch.daysSpent}/${ch.estimated} days. Move forward.`});
         else if(r>=1.2) list.push({type:'warn',icon:'⏳',title:`Overrunning ${ch.name}`,msg:`${ch.daysSpent}/${ch.estimated} days used.`});
       });
-      SUBJECTS.forEach(sub=>{
+      ['Quant','Reasoning','English','Banking','Calculations'].forEach(sub=>{
         const last=state.lastSubjectActivity[sub];
-        if(!last){
-          if(['English','Banking','Calculations'].includes(sub))
-            list.push({type:'warn',icon:'📉',title:`No activity in ${sub}`,msg:'Start with even 20 minutes today.'});
-          return;
-        }
+        if(!last){ if(['English','Banking','Calculations'].includes(sub)) list.push({type:'warn',icon:'📉',title:`No activity in ${sub}`,msg:'Start with even 20 minutes today.'}); return; }
         const diff=daysBetween(last,today);
         if(diff>=3) list.push({type:diff>=5?'danger':'warn',icon:'📉',title:`${sub} neglected ${diff} days`,msg:`Last studied ${formatDate(last)}`});
-        else if(diff>=2&&(sub==='English'||sub==='Banking'))
-          list.push({type:'purple',icon:sub==='English'?'📘':'🏦',title:`${sub} skipped`,msg:'Your weak area — do not skip today.'});
+        else if(diff>=2&&(sub==='English'||sub==='Banking')) list.push({type:'purple',icon:sub==='English'?'📘':'🏦',title:`${sub} skipped`,msg:'Your weak area — do not skip today.'});
       });
       const calc=state.chapters.find(c=>c.id==='c1');
       if(calc&&!calc.done) list.push({type:'info',icon:'🧮',title:'Tables / Squares / Cubes',msg:'Only 10–15 min daily builds the habit.'});
@@ -978,32 +699,21 @@
       const log=getLog(today);
       const reqDone=DAILY_TEMPLATE.filter(t=>t.required&&log.tasks[t.id]).length;
       const reqTotal=DAILY_TEMPLATE.filter(t=>t.required).length;
-      if(reqDone===reqTotal&&reqTotal>0)
-        list.unshift({type:'success',icon:'✅',title:'All required targets done!',msg:'Excellent discipline today.'});
+      if(reqDone===reqTotal&&reqTotal>0) list.unshift({type:'success',icon:'✅',title:'All required targets done!',msg:'Excellent discipline today.'});
       return list;
     }
 
     function render(){
       document.getElementById('currentDateDisplay').textContent=formatDate(state.currentDate);
       document.getElementById('dayType').textContent=isWeekend(state.currentDate)?'Weekend · Mock focus':'Weekday · Coaching day';
-      renderRemindersTop();
-      renderDaily();
-      renderChapters();
-      renderProgress();
-      renderGallery();
-      renderShift();
-      renderAllReminders();
-      updateStreak();
-      saveState();
+      renderRemindersTop(); renderDaily(); renderChapters(); renderProgress();
+      renderGallery(); renderShift(); renderAllReminders(); updateStreak(); saveState();
     }
 
     function renderRemindersTop(){
       const rems=generateReminders().slice(0,3);
       const box=document.getElementById('remindersTop');
-      if(!rems.length){
-        box.innerHTML=`<div class="alert alert-success"><span class="alert-icon">✅</span><div>No critical alerts. Keep going.</div></div>`;
-        return;
-      }
+      if(!rems.length){ box.innerHTML=`<div class="alert alert-success"><span class="alert-icon">✅</span><div>No critical alerts. Keep going.</div></div>`; return; }
       box.innerHTML=rems.map(r=>`<div class="alert alert-${r.type}"><span class="alert-icon">${r.icon}</span><div><b>${r.title}</b><br>${r.msg}</div></div>`).join('');
     }
 
@@ -1012,24 +722,16 @@
       document.getElementById('allReminders').innerHTML=rems.length
         ? rems.map(r=>{
             const del = r.custom ? `<button class="alert-delete" onclick="deleteCustomAlert(${r.idx})" title="Remove">✕</button>` : '';
-            return `<div class="alert alert-${r.type} ${r.custom?'alert-custom':''}"><span class="alert-icon">${r.icon}</span><div><b>${r.title}</b><br>${r.msg}</div>${del}</div>`;
+            return `<div class="alert alert-${r.type}" style="position:relative"><span class="alert-icon">${r.icon}</span><div><b>${r.title}</b><br>${r.msg}</div>${del}</div>`;
           }).join('')
         : `<div class="alert alert-success"><span class="alert-icon">🎉</span><div>All clear right now.</div></div>`;
     }
 
     function renderDaily(){
-      const log=getLog(state.currentDate);
-      let done=0;
+      const log=getLog(state.currentDate); let done=0;
       document.getElementById('dailyTasks').innerHTML=DAILY_TEMPLATE.map(task=>{
-        const checked=!!log.tasks[task.id];
-        if(checked) done++;
-        return `<div class="task ${checked?'done':''}">
-          <input type="checkbox" ${checked?'checked':''} onchange="toggleTask('${task.id}')">
-          <div class="task-body">
-            <div class="task-name">${task.title}</div>
-            <div class="task-meta">${task.subject}${task.required?' · Required':''}</div>
-          </div>
-        </div>`;
+        const checked=!!log.tasks[task.id]; if(checked) done++;
+        return `<div class="task ${checked?'done':''}"><input type="checkbox" ${checked?'checked':''} onchange="toggleTask('${task.id}')"><div class="task-body"><div class="task-name">${task.title}</div><div class="task-meta">${task.subject}${task.required?' · Required':''}</div></div></div>`;
       }).join('');
       const pct=Math.round((done/DAILY_TEMPLATE.length)*100);
       document.getElementById('dailyProgress').style.width=pct+'%';
@@ -1037,151 +739,118 @@
       document.getElementById('dailyNote').value=log.note||'';
     }
 
+    function toggleSection(sec){ state.collapsedSections[sec]=!state.collapsedSections[sec]; renderChapters(); saveState(); }
+    function toggleSubject(key){ state.collapsedSubjects[key]=!state.collapsedSubjects[key]; renderChapters(); saveState(); }
+
     function renderChapters(){
-      let html='', cur='';
+      const tree={};
       state.chapters.forEach(ch=>{
-        if(ch.subject!==cur){ cur=ch.subject; html+=`<div class="section-title">${cur}</div>`; }
-        let bc='badge-ok', bt=`${ch.daysSpent}/${ch.estimated}d`;
-        if(ch.done){ bc='badge-done'; bt='Done ✓'; }
-        else if(ch.daysSpent>ch.estimated*1.4) bc='badge-over';
-        else if(ch.daysSpent>ch.estimated) bc='badge-warn';
-        html+=`<div class="chapter">
-          <div class="chapter-name">${ch.name}</div>
-          <span class="badge ${bc}">${bt}</span>
-          <div class="day-controls">
-            <button class="btn btn-ghost btn-xs" onclick="changeDays('${ch.id}',-1)" title="Subtract day">−</button>
-            <button class="btn btn-ghost btn-xs" onclick="changeDays('${ch.id}',1)" title="Add day">+</button>
-          </div>
-          <button class="btn btn-sm ${ch.done?'btn-ghost':'btn-green'}" onclick="toggleChapterDone('${ch.id}')">${ch.done?'Undo':'Done'}</button>
-          <button class="btn btn-ghost btn-xs" onclick="deleteChapter('${ch.id}')" title="Remove">✕</button>
-        </div>`;
-        if(state.completionNotes[ch.id]){
-          html+=`<div class="complete-note">📝 ${state.completionNotes[ch.id]}</div>`;
-        }
+        const sec=ch.section||'Prelims';
+        if(!tree[sec]) tree[sec]={};
+        if(!tree[sec][ch.subject]) tree[sec][ch.subject]=[];
+        tree[sec][ch.subject].push(ch);
       });
-      document.getElementById('chapterList').innerHTML=html||'<p style="color:var(--text3);font-size:0.85rem">No chapters yet. Add one below.</p>';
+      const sectionOrder=['Foundation','Prelims','Mains'];
+      let html='';
+      sectionOrder.forEach(sec=>{
+        if(!tree[sec]) return;
+        const allInSec=Object.values(tree[sec]).flat();
+        const doneCount=allInSec.filter(c=>c.done).length;
+        const collapsed=!!state.collapsedSections[sec];
+        html+=`<div class="section-block"><div class="section-header ${collapsed?'collapsed':''}" onclick="toggleSection('${sec}')"><span class="chevron">▼</span><span class="section-title-text">${sec}</span><span class="section-count">${doneCount}/${allInSec.length}</span></div>`;
+        if(!collapsed){
+          const subjects=Object.keys(tree[sec]).sort((a,b)=>SUBJECT_ORDER.indexOf(a)-SUBJECT_ORDER.indexOf(b));
+          subjects.forEach(sub=>{
+            const items=tree[sec][sub];
+            const subKey=sec+'|'+sub;
+            const subCollapsed=!!state.collapsedSubjects[subKey];
+            const subDone=items.filter(c=>c.done).length;
+            html+=`<div class="subject-block ${subCollapsed?'collapsed':''}" style="${subCollapsed?'':'max-height:2000px'}"><div class="subject-header" onclick="toggleSubject('${subKey}')"><span class="chevron" style="font-size:0.65rem;color:var(--text3);transform:${subCollapsed?'rotate(-90deg)':'none'};display:inline-block;width:12px;transition:transform 0.25s">▼</span><span class="subject-name">${sub}</span><span class="subject-meta">${subDone}/${items.length}</span></div>`;
+            if(!subCollapsed){
+              const bySub={};
+              items.forEach(ch=>{ const k=ch.sub||'_'; if(!bySub[k]) bySub[k]=[]; bySub[k].push(ch); });
+              Object.entries(bySub).forEach(([subName, chs])=>{
+                if(subName!=='_') html+=`<div style="font-size:0.68rem;color:var(--text3);font-weight:600;margin:6px 0 2px 16px;letter-spacing:0.3px">${subName}</div>`;
+                chs.forEach(ch=>{
+                  let bc='badge-ok', bt=`${ch.daysSpent}/${ch.estimated}d`;
+                  if(ch.done){ bc='badge-done'; bt='Done ✓'; }
+                  else if(ch.daysSpent>ch.estimated*1.4) bc='badge-over';
+                  else if(ch.daysSpent>ch.estimated) bc='badge-warn';
+                  html+=`<div class="chapter" style="margin-left:${subName!=='_'?8:0}px"><div class="chapter-name">${ch.name}</div><span class="badge ${bc}">${bt}</span><div class="day-controls"><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();changeDays('${ch.id}',-1)">−</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();changeDays('${ch.id}',1)">+</button></div><button class="btn btn-sm ${ch.done?'btn-ghost':'btn-green'}" onclick="event.stopPropagation();toggleChapterDone('${ch.id}')">${ch.done?'Undo':'Done'}</button><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();deleteChapter('${ch.id}')">✕</button></div>`;
+                  if(state.completionNotes[ch.id]) html+=`<div class="complete-note">📝 ${state.completionNotes[ch.id]}</div>`;
+                });
+              });
+            }
+            html+=`</div>`;
+          });
+        }
+        html+=`</div>`;
+      });
+      document.getElementById('chapterList').innerHTML=html||'<p style="color:var(--text3);font-size:0.84rem">No topics yet. Add one below.</p>';
     }
 
     function setGraphRange(range){
       state.graphRange=range;
       document.querySelectorAll('.graph-tab').forEach(t=>t.classList.toggle('active',t.dataset.range===range));
-      renderActivityChart();
-      saveState();
+      renderActivityChart(); saveState();
     }
 
     function renderActivityChart(){
-      const range=state.graphRange||'day';
-      const today=new Date();
-      const points=[];
-      let count=range==='day'?7:range==='week'?8:6;
-      let labelFn, stepDays;
-
-      if(range==='day'){
-        stepDays=1;
-        labelFn=(d)=>d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric'});
-      } else if(range==='week'){
-        stepDays=7;
-        labelFn=(d)=>'W '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-      } else {
-        stepDays=30;
-        labelFn=(d)=>d.toLocaleDateString('en-IN',{month:'short'});
-      }
-
+      const range=state.graphRange||'day'; const today=new Date(); const points=[];
+      let count=range==='day'?7:range==='week'?8:6; let labelFn, stepDays;
+      if(range==='day'){ stepDays=1; labelFn=(d)=>d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric'}); }
+      else if(range==='week'){ stepDays=7; labelFn=(d)=>'W '+d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}); }
+      else { stepDays=30; labelFn=(d)=>d.toLocaleDateString('en-IN',{month:'short'}); }
       for(let i=count-1;i>=0;i--){
-        const end=new Date(today);
-        end.setDate(end.getDate()-i*stepDays);
-        const start=new Date(end);
-        start.setDate(start.getDate()-(stepDays-1));
+        const end=new Date(today); end.setDate(end.getDate()-i*stepDays);
+        const start=new Date(end); start.setDate(start.getDate()-(stepDays-1));
         let total=0;
         for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
-          const key=d.toISOString().slice(0,10);
-          const log=state.dailyLogs[key];
+          const key=d.toISOString().slice(0,10); const log=state.dailyLogs[key];
           if(log&&log.tasks) total+=Object.values(log.tasks).filter(Boolean).length;
         }
         points.push({label:labelFn(end),value:total});
       }
-
       const max=Math.max(...points.map(p=>p.value),1);
-      const el=document.getElementById('activityChart');
-      el.innerHTML=points.map(p=>{
-        const h=Math.max(4,Math.round((p.value/max)*120));
-        return `<div class="bar-col">
-          <span class="bar-col-val">${p.value||''}</span>
-          <div class="bar-col-fill" style="height:${h}px"></div>
-          <span class="bar-col-label">${p.label}</span>
-        </div>`;
+      document.getElementById('activityChart').innerHTML=points.map((p,i)=>{
+        const h=Math.max(4,Math.round((p.value/max)*110));
+        return `<div class="bar-col"><span class="bar-col-val">${p.value||''}</span><div class="bar-col-fill" style="height:${h}px;animation-delay:${i*0.04}s"></div><span class="bar-col-label">${p.label}</span></div>`;
       }).join('');
     }
 
     function renderProgress(){
-      const total=state.chapters.length;
-      const done=state.chapters.filter(c=>c.done).length;
-      const pct=total?Math.round((done/total)*100):0;
-      const deg=(done/total)*360||0;
+      const total=state.chapters.length; const done=state.chapters.filter(c=>c.done).length;
+      const pct=total?Math.round((done/total)*100):0; const deg=(done/total)*360||0;
       document.getElementById('pieChart').style.background=`conic-gradient(#10b981 0deg ${deg}deg, #1e293b ${deg}deg 360deg)`;
       document.getElementById('piePercent').textContent=pct+'%';
-      document.getElementById('pieLegend').innerHTML=`
-        <div class="legend-row"><span class="legend-dot" style="background:#10b981"></span> Completed · ${done}</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#1e293b"></span> Remaining · ${total-done}</div>
-        <div style="margin-top:8px;font-size:0.74rem;color:var(--text3)">Total chapters: ${total}</div>`;
-
-      const sub={};
-      SUBJECTS.forEach(s=>sub[s]={total:0,done:0});
-      state.chapters.forEach(c=>{ if(sub[c.subject]){ sub[c.subject].total++; if(c.done) sub[c.subject].done++; }});
-      const colors={Quant:'#3b82f6',Reasoning:'#8b5cf6',English:'#ec4899',Banking:'#10b981',Calculations:'#f59e0b',Mock:'#64748b'};
-      document.getElementById('subjectBars').innerHTML=SUBJECTS.filter(s=>sub[s].total>0).map(s=>{
-        const p=sub[s].total?Math.round((sub[s].done/sub[s].total)*100):0;
-        return `<div class="bar-row">
-          <span class="bar-label">${s}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]}"></div></div>
-          <span class="bar-val">${sub[s].done}/${sub[s].total}</span>
-        </div>`;
+      document.getElementById('pieLegend').innerHTML=`<div class="legend-row"><span class="legend-dot" style="background:#10b981"></span> Completed · ${done}</div><div class="legend-row"><span class="legend-dot" style="background:#1e293b"></span> Remaining · ${total-done}</div><div style="margin-top:6px;font-size:0.72rem;color:var(--text3)">Total topics: ${total}</div>`;
+      const sub={}; SUBJECT_ORDER.forEach(s=>sub[s]={total:0,done:0});
+      state.chapters.forEach(c=>{ if(!sub[c.subject]) sub[c.subject]={total:0,done:0}; sub[c.subject].total++; if(c.done) sub[c.subject].done++; });
+      const colors={Quant:'#3b82f6',Reasoning:'#8b5cf6',English:'#ec4899',Banking:'#10b981',Calculations:'#f59e0b',Mock:'#64748b',GA:'#14b8a6'};
+      document.getElementById('subjectBars').innerHTML=Object.keys(sub).filter(s=>sub[s].total>0).map(s=>{
+        const p=Math.round((sub[s].done/sub[s].total)*100);
+        return `<div class="bar-row"><span class="bar-label">${s}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]||'#64748b'}"></div></div><span class="bar-val">${sub[s].done}/${sub[s].total}</span></div>`;
       }).join('');
-
       const notes=Object.entries(state.completionNotes);
       document.getElementById('completionNotes').innerHTML=notes.length
-        ? notes.map(([id,note])=>{
-            const ch=state.chapters.find(c=>c.id===id);
-            return `<div class="complete-note"><b>${ch?ch.name:id}</b><br>${note}</div>`;
-          }).join('')
-        : '<p style="color:var(--text3);font-size:0.84rem">No notes yet. Mark a chapter Done to add one.</p>';
-
-      const totalDays=state.chapters.reduce((a,c)=>a+c.daysSpent,0);
-      document.getElementById('statsGrid').innerHTML=`
-        <div class="stat"><div class="stat-num">${done}/${total}</div><div class="stat-label">Chapters Done</div></div>
-        <div class="stat"><div class="stat-num">${totalDays}</div><div class="stat-label">Days Logged</div></div>
-        <div class="stat"><div class="stat-num">${state.streak}</div><div class="stat-label">Streak</div></div>
-        <div class="stat"><div class="stat-num">${state.shifts.length}</div><div class="stat-label">Shifts</div></div>`;
-
-      // Graph tabs active state
+        ? notes.map(([id,note])=>{ const ch=state.chapters.find(c=>c.id===id); return `<div class="complete-note"><b>${ch?ch.name:id}</b><br>${note}</div>`; }).join('')
+        : '<p style="color:var(--text3);font-size:0.82rem">No notes yet. Mark a topic Done to add one.</p>';
+      const totalDays=state.chapters.reduce((a,c)=>a+(c.daysSpent||0),0);
+      document.getElementById('statsGrid').innerHTML=`<div class="stat"><div class="stat-num">${done}/${total}</div><div class="stat-label">Topics Done</div></div><div class="stat"><div class="stat-num">${totalDays}</div><div class="stat-label">Days Logged</div></div><div class="stat"><div class="stat-num">${state.streak}</div><div class="stat-label">Streak</div></div><div class="stat"><div class="stat-num">${state.shifts.length}</div><div class="stat-label">Shifts</div></div>`;
       document.querySelectorAll('.graph-tab').forEach(t=>t.classList.toggle('active',t.dataset.range===(state.graphRange||'day')));
       renderActivityChart();
     }
 
     function renderGallery(){
       const gal=document.getElementById('picGallery');
-      if(!state.pictures.length){
-        gal.innerHTML='<p style="color:var(--text3);font-size:0.85rem">No photos yet. Paste a cloud link above.</p>';
-        return;
-      }
-      gal.innerHTML=[...state.pictures].reverse().map((p,i)=>{
-        return `<div class="pic-card">
-          <img src="${p.url}" alt="${p.note||'Photo'}" onerror="this.src='https://placehold.co/160x110/1e293b/64748b?text=Image'"/>
-          <div class="pic-info">
-            <div class="pic-title">${p.tag||p.note||'Photo'}</div>
-            <div class="pic-note">${p.note||''}</div>
-            <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="deletePicture(${state.pictures.length-1-i})">Delete</button>
-          </div>
-        </div>`;
-      }).join('');
+      if(!state.pictures.length){ gal.innerHTML='<p style="color:var(--text3);font-size:0.84rem">No photos yet. Paste a cloud link above.</p>'; return; }
+      gal.innerHTML=[...state.pictures].reverse().map((p,i)=>`<div class="pic-card"><img src="${p.url}" alt="${p.note||'Photo'}" loading="lazy" onerror="this.src='https://placehold.co/160x100/1e293b/64748b?text=Image'"/><div class="pic-info"><div class="pic-title">${p.tag||p.note||'Photo'}</div><div class="pic-note">${p.note||''}</div><button class="btn btn-ghost btn-sm" style="margin-top:5px" onclick="deletePicture(${state.pictures.length-1-i})">Delete</button></div></div>`).join('');
     }
 
     function renderShift(){
-      document.getElementById('shiftTaskSelect').innerHTML=
-        '<option value="">— Select daily task —</option>'+
-        DAILY_TEMPLATE.map(t=>`<option value="${t.id}">${t.title}</option>`).join('');
+      document.getElementById('shiftTaskSelect').innerHTML='<option value="">— Select daily task —</option>'+DAILY_TEMPLATE.map(t=>`<option value="${t.id}">${t.title}</option>`).join('');
       const hist=document.getElementById('shiftHistory');
-      if(!state.shifts.length){ hist.innerHTML='<p style="color:var(--text3);font-size:0.85rem">No shifts yet. Good discipline.</p>'; return; }
+      if(!state.shifts.length){ hist.innerHTML='<p style="color:var(--text3);font-size:0.84rem">No shifts yet. Good discipline.</p>'; return; }
       hist.innerHTML=[...state.shifts].reverse().slice(0,15).map(s=>{
         const title=s.customTitle || DAILY_TEMPLATE.find(t=>t.id===s.taskId)?.title || s.taskId;
         const time=s.time?` · ${s.time}`:'';
@@ -1189,20 +858,16 @@
       }).join('');
     }
 
-    // Actions
     function switchTab(name){
       document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
       document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
-      ['daily','chapters','progress','gallery','shift','alerts'].forEach(t=>{
-        document.getElementById('tab-'+t).classList.toggle('hidden',t!==name);
-      });
+      ['daily','chapters','progress','gallery','shift','alerts'].forEach(t=> document.getElementById('tab-'+t).classList.toggle('hidden',t!==name));
     }
     function changeDate(d){ const dt=new Date(state.currentDate+'T12:00:00'); dt.setDate(dt.getDate()+d); state.currentDate=dt.toISOString().slice(0,10); render(); }
     function goToday(){ state.currentDate=getTodayStr(); render(); }
 
     function toggleTask(id){
-      const log=getLog(state.currentDate);
-      log.tasks[id]=!log.tasks[id];
+      const log=getLog(state.currentDate); log.tasks[id]=!log.tasks[id];
       if(log.tasks[id]){ const t=DAILY_TEMPLATE.find(x=>x.id===id); if(t) state.lastSubjectActivity[t.subject]=state.currentDate; }
       render(); showToast(log.tasks[id]?'Done ✓':'Unchecked');
     }
@@ -1215,38 +880,34 @@
     function saveDailyNote(){ getLog(state.currentDate).note=document.getElementById('dailyNote').value; saveState(); showToast('Note saved'); }
 
     function changeDays(id, delta){
-      const ch=state.chapters.find(c=>c.id===id);
-      if(!ch) return;
+      const ch=state.chapters.find(c=>c.id===id); if(!ch) return;
       ch.daysSpent=Math.max(0, (ch.daysSpent||0)+delta);
       if(delta>0) state.lastSubjectActivity[ch.subject]=state.currentDate;
-      render();
-      showToast(delta>0?'+1 day':'-1 day');
+      render(); showToast(delta>0?'+1 day':'-1 day');
     }
     function toggleChapterDone(id){
-      const ch=state.chapters.find(c=>c.id===id);
-      if(!ch) return;
+      const ch=state.chapters.find(c=>c.id===id); if(!ch) return;
       if(!ch.done){
         const note=prompt(`Completed: ${ch.name}\n\nShort note (optional):`, state.completionNotes[id]||'Completed!');
         if(note!==null) state.completionNotes[id]=note.trim()||'Completed!';
         ch.done=true;
       } else ch.done=false;
-      render(); showToast(ch.done?'Chapter Done ✓':'Reopened');
+      render(); showToast(ch.done?'Topic Done ✓':'Reopened');
     }
     function addChapter(){
       const name=document.getElementById('newChName').value.trim();
+      const section=document.getElementById('newChSection').value;
       const subject=document.getElementById('newChSubject').value;
+      const sub=document.getElementById('newChSub').value.trim();
       const estimated=Math.max(1,parseInt(document.getElementById('newChDays').value,10)||7);
-      if(!name){ showToast('Enter chapter name'); return; }
-      state.chapters.push({id:uid(),subject,name,estimated,daysSpent:0,done:false});
-      // keep subject order roughly
-      state.chapters.sort((a,b)=>SUBJECTS.indexOf(a.subject)-SUBJECTS.indexOf(b.subject));
-      document.getElementById('newChName').value='';
-      render(); showToast('Chapter added');
+      if(!name){ showToast('Enter topic name'); return; }
+      state.chapters.push({id:uid(),section,subject,sub,name,estimated,daysSpent:0,done:false});
+      document.getElementById('newChName').value=''; document.getElementById('newChSub').value='';
+      render(); showToast('Topic added');
     }
     function deleteChapter(id){
-      if(!confirm('Remove this chapter?')) return;
-      state.chapters=state.chapters.filter(c=>c.id!==id);
-      delete state.completionNotes[id];
+      if(!confirm('Remove this topic?')) return;
+      state.chapters=state.chapters.filter(c=>c.id!==id); delete state.completionNotes[id];
       render(); showToast('Removed');
     }
 
@@ -1256,9 +917,7 @@
       const tag=document.getElementById('picTag').value.trim();
       if(!url){ showToast('Enter image URL'); return; }
       state.pictures.push({url,note,tag,date:getTodayStr()});
-      document.getElementById('picUrl').value='';
-      document.getElementById('picNote').value='';
-      document.getElementById('picTag').value='';
+      document.getElementById('picUrl').value=''; document.getElementById('picNote').value=''; document.getElementById('picTag').value='';
       render(); showToast('Photo added');
     }
     function deletePicture(i){ if(!confirm('Delete?')) return; state.pictures.splice(i,1); render(); }
@@ -1267,8 +926,7 @@
       const log=getLog(state.currentDate);
       const incomplete=DAILY_TEMPLATE.filter(t=>!log.tasks[t.id]);
       if(!incomplete.length){ showToast('All done!'); return; }
-      const reason=prompt('Reason for shifting?','Could not complete');
-      if(reason===null) return;
+      const reason=prompt('Reason for shifting?','Could not complete'); if(reason===null) return;
       const tom=new Date(state.currentDate+'T12:00:00'); tom.setDate(tom.getDate()+1);
       const toDate=tom.toISOString().slice(0,10);
       incomplete.forEach(t=>{
@@ -1286,17 +944,14 @@
       const tom=new Date(state.currentDate+'T12:00:00'); tom.setDate(tom.getDate()+1);
       const toDate=tom.toISOString().slice(0,10);
       const entry={date:state.currentDate,taskId:taskId||'custom',reason,toDate};
-      if(customTitle) entry.customTitle=customTitle;
-      if(time) entry.time=time;
+      if(customTitle) entry.customTitle=customTitle; if(time) entry.time=time;
       state.shifts.push(entry);
       const tl=getLog(toDate);
       const title=customTitle || DAILY_TEMPLATE.find(t=>t.id===taskId)?.title || taskId;
       const timeStr=time?` @ ${time}`:'';
       tl.note=(tl.note||'')+`\n[Shifted] ${title}${timeStr}: ${reason}`;
-      document.getElementById('shiftReason').value='';
-      document.getElementById('shiftCustomTask').value='';
-      document.getElementById('shiftCustomTime').value='';
-      document.getElementById('shiftTaskSelect').value='';
+      document.getElementById('shiftReason').value=''; document.getElementById('shiftCustomTask').value='';
+      document.getElementById('shiftCustomTime').value=''; document.getElementById('shiftTaskSelect').value='';
       render(); showToast('Shifted to next day');
     }
 
@@ -1307,20 +962,12 @@
       if(!title){ showToast('Enter alert title'); return; }
       const icons={info:'ℹ️',warn:'⚠️',danger:'🚨',purple:'🎯',success:'✨'};
       state.customAlerts.push({title,msg:msg||'',type,icon:icons[type]||'🔔'});
-      document.getElementById('customAlertTitle').value='';
-      document.getElementById('customAlertMsg').value='';
+      document.getElementById('customAlertTitle').value=''; document.getElementById('customAlertMsg').value='';
       render(); showToast('Alert added');
     }
-    function deleteCustomAlert(idx){
-      state.customAlerts.splice(idx,1);
-      render(); showToast('Alert removed');
-    }
+    function deleteCustomAlert(idx){ state.customAlerts.splice(idx,1); render(); showToast('Alert removed'); }
 
-    // Init
-    loadState();
-    render();
-    updateClock();
-    setInterval(updateClock, 1000);
+    loadState(); render(); updateClock(); setInterval(updateClock, 1000);
   </script>
 </body>
 </html>
