@@ -730,24 +730,61 @@
     function loadState(){
       try{
         const raw=localStorage.getItem('bankTracker2027_v3');
-        if(raw) state=Object.assign(state, JSON.parse(raw));
+        if(raw){
+          const parsed=JSON.parse(raw);
+          // Merge carefully so arrays/objects are kept
+          state=Object.assign(state, parsed);
+          if(parsed.pictures) state.pictures=parsed.pictures;
+          if(parsed.customAlerts) state.customAlerts=parsed.customAlerts;
+          if(parsed.dailyLogs) state.dailyLogs=parsed.dailyLogs;
+          if(parsed.chapters) state.chapters=parsed.chapters;
+          if(parsed.shifts) state.shifts=parsed.shifts;
+          if(parsed.completionNotes) state.completionNotes=parsed.completionNotes;
+          if(parsed.lastSubjectActivity) state.lastSubjectActivity=parsed.lastSubjectActivity;
+        }
         if(!state.chapters||!state.chapters.length) state.chapters=buildDefaultChapters();
-        state.chapters=state.chapters.map(c=>({ section: c.section||'Prelims', sub: c.sub||'', ...c }));
+        state.chapters=state.chapters.map(c=>({ section: c.section||'Prelims', sub: c.sub||'', daysSpent:c.daysSpent||0, done:!!c.done, ...c }));
         if(!state.dailyLogs) state.dailyLogs={};
         if(!state.shifts) state.shifts=[];
         if(!state.lastSubjectActivity) state.lastSubjectActivity={};
-        if(!state.pictures) state.pictures=[];
+        if(!Array.isArray(state.pictures)) state.pictures=[];
         if(!state.completionNotes) state.completionNotes={};
-        if(!state.customAlerts) state.customAlerts=[];
+        if(!Array.isArray(state.customAlerts)) state.customAlerts=[];
         if(!state.collapsedSections) state.collapsedSections={};
         if(!state.collapsedSubjects) state.collapsedSubjects={};
         if(!state.currentDate) state.currentDate=getTodayStr();
         if(typeof state.streak!=='number') state.streak=0;
         if(!state.graphRange) state.graphRange='day';
         if(!state.galleryFilter) state.galleryFilter='All';
-      }catch(e){ state.chapters=buildDefaultChapters(); }
+      }catch(e){
+        console.warn('loadState failed', e);
+        if(!state.chapters||!state.chapters.length) state.chapters=buildDefaultChapters();
+      }
     }
-    function saveState(){ localStorage.setItem('bankTracker2027_v3',JSON.stringify(state)); }
+    
+    function saveState(){
+      try{
+        const payload=JSON.stringify(state);
+        localStorage.setItem('bankTracker2027_v3', payload);
+        // mirror backup key
+        localStorage.setItem('bankTracker2027_v3_backup', payload);
+      }catch(e){
+        console.warn('saveState failed', e);
+        // Quota exceeded — often from photos; keep core data without largest images
+        try{
+          const slim=Object.assign({}, state);
+          slim.pictures=(state.pictures||[]).map(p=>{
+            if(p.url && p.url.length>200000) return Object.assign({}, p, {url:'', note:(p.note||'')+' [image too large for storage]'});
+            return p;
+          });
+          localStorage.setItem('bankTracker2027_v3', JSON.stringify(slim));
+          showToast('Storage almost full — some large photos may not save');
+        }catch(e2){
+          showToast('Could not save — storage full. Use Export Backup.');
+        }
+      }
+    }
+    
 
     function showToast(msg){
       const t=document.getElementById('toast');
@@ -804,28 +841,11 @@
     }
 
     function generateReminders(){
-      const list=[]; const today=state.currentDate;
-      (state.customAlerts||[]).forEach((a,i)=> list.push({type:a.type||'info',icon:a.icon||'🔔',title:a.title,msg:a.msg,custom:true,idx:i}));
-      state.chapters.forEach(ch=>{
-        if(ch.done) return;
-        const r=ch.daysSpent/(ch.estimated||1);
-        if(r>=1.5) list.push({type:'danger',icon:'🚨',title:`Too many days on ${ch.name}`,msg:`${ch.daysSpent}/${ch.estimated} days. Move forward.`});
-        else if(r>=1.2) list.push({type:'warn',icon:'⏳',title:`Overrunning ${ch.name}`,msg:`${ch.daysSpent}/${ch.estimated} days used.`});
+      // Only user-created custom alerts — no system/auto alerts
+      const list=[];
+      (state.customAlerts||[]).forEach((a,i)=>{
+        list.push({type:a.type||'info',icon:a.icon||'🔔',title:a.title,msg:a.msg||'',custom:true,idx:i});
       });
-      ['Quant','Reasoning','English','Banking','Calculations'].forEach(sub=>{
-        const last=state.lastSubjectActivity[sub];
-        if(!last){ if(['English','Banking','Calculations'].includes(sub)) list.push({type:'warn',icon:'📉',title:`No activity in ${sub}`,msg:'Start with even 20 minutes today.'}); return; }
-        const diff=daysBetween(last,today);
-        if(diff>=3) list.push({type:diff>=5?'danger':'warn',icon:'📉',title:`${sub} neglected ${diff} days`,msg:`Last studied ${formatDate(last)}`});
-        else if(diff>=2&&(sub==='English'||sub==='Banking')) list.push({type:'purple',icon:sub==='English'?'📘':'🏦',title:`${sub} skipped`,msg:'Your weak area — do not skip today.'});
-      });
-      const calc=state.chapters.find(c=>c.id==='c1');
-      if(calc&&!calc.done) list.push({type:'info',icon:'🧮',title:'Tables / Squares / Cubes',msg:'Only 10–15 min daily builds the habit.'});
-      if(!isWeekend(today)) list.push({type:'info',icon:'😴',title:'Post-coaching nap',msg:'Maximum 15–20 minutes. Set an alarm.'});
-      const log=getLog(today);
-      const reqDone=DAILY_TEMPLATE.filter(t=>t.required&&log.tasks[t.id]).length;
-      const reqTotal=DAILY_TEMPLATE.filter(t=>t.required).length;
-      if(reqDone===reqTotal&&reqTotal>0) list.unshift({type:'success',icon:'✅',title:'All required targets done!',msg:'Excellent discipline today.'});
       return list;
     }
 
@@ -839,7 +859,10 @@
     function renderRemindersTop(){
       const rems=generateReminders().slice(0,3);
       const box=document.getElementById('remindersTop');
-      if(!rems.length){ box.innerHTML=`<div class="alert alert-success"><span class="alert-icon">✅</span><div>No critical alerts. Keep going.</div></div>`; return; }
+      if(!rems.length){
+        box.innerHTML='';
+        return;
+      }
       box.innerHTML=rems.map(r=>`<div class="alert alert-${r.type}"><span class="alert-icon">${r.icon}</span><div><b>${r.title}</b><br>${r.msg}</div></div>`).join('');
     }
 
@@ -847,21 +870,33 @@
       const rems=generateReminders();
       document.getElementById('allReminders').innerHTML=rems.length
         ? rems.map(r=>{
-            const del = r.custom ? `<button class="alert-delete" onclick="deleteCustomAlert(${r.idx})" title="Remove">✕</button>` : '';
+            const del = `<button class="alert-delete" onclick="deleteCustomAlert(${r.idx})" title="Remove">✕</button>`;
             return `<div class="alert alert-${r.type}" style="position:relative"><span class="alert-icon">${r.icon}</span><div><b>${r.title}</b><br>${r.msg}</div>${del}</div>`;
           }).join('')
-        : `<div class="alert alert-success"><span class="alert-icon">🎉</span><div>All clear right now.</div></div>`;
+        : `<div class="alert alert-info"><span class="alert-icon">🔔</span><div><b>No custom alerts</b><br>Add your own reminders above. Only what you create appears here.</div></div>`;
     }
 
     function renderDaily(){
-      const log=getLog(state.currentDate); let done=0;
+      const log=getLog(state.currentDate);
+      let done=0, reqDone=0, reqTotal=0;
       document.getElementById('dailyTasks').innerHTML=DAILY_TEMPLATE.map(task=>{
-        const checked=!!log.tasks[task.id]; if(checked) done++;
-        return `<div class="task ${checked?'done':''}"><input type="checkbox" ${checked?'checked':''} onchange="toggleTask('${task.id}')"><div class="task-body"><div class="task-name">${task.title}</div><div class="task-meta">${task.subject}${task.required?' · Required':''}</div></div></div>`;
+        const checked=!!log.tasks[task.id];
+        if(checked) done++;
+        if(task.required){ reqTotal++; if(checked) reqDone++; }
+        return `<div class="task ${checked?'done':''}">
+          <input type="checkbox" ${checked?'checked':''} onchange="toggleTask('${task.id}')">
+          <div class="task-body">
+            <div class="task-name">${task.title}</div>
+            <div class="task-meta">${task.subject}${task.required?' · Required':''}</div>
+          </div>
+        </div>`;
       }).join('');
-      const pct=Math.round((done/DAILY_TEMPLATE.length)*100);
-      document.getElementById('dailyProgress').style.width=pct+'%';
-      document.getElementById('dailyPct').textContent=pct+'%';
+      // Progress synced: overall tasks % but pct label shows required completion for streak clarity
+      const pctAll=Math.round((done/DAILY_TEMPLATE.length)*100);
+      const pctReq=reqTotal?Math.round((reqDone/reqTotal)*100):0;
+      document.getElementById('dailyProgress').style.width=pctAll+'%';
+      document.getElementById('dailyPct').textContent=pctAll+'%';
+      document.getElementById('dailyPct').title='Required: '+pctReq+'% · All tasks: '+pctAll+'%';
       document.getElementById('dailyNote').value=log.note||'';
     }
 
@@ -945,24 +980,76 @@
     }
 
     function renderProgress(){
-      const total=state.chapters.length; const done=state.chapters.filter(c=>c.done).length;
-      const pct=total?Math.round((done/total)*100):0; const deg=(done/total)*360||0;
+      const total=state.chapters.length;
+      const done=state.chapters.filter(c=>c.done).length;
+      const pct=total?Math.round((done/total)*100):0;
+      const deg=(done/total)*360||0;
       document.getElementById('pieChart').style.background=`conic-gradient(#10b981 0deg ${deg}deg, #1e293b ${deg}deg 360deg)`;
       document.getElementById('piePercent').textContent=pct+'%';
-      document.getElementById('pieLegend').innerHTML=`<div class="legend-row"><span class="legend-dot" style="background:#10b981"></span> Completed · ${done}</div><div class="legend-row"><span class="legend-dot" style="background:#1e293b"></span> Remaining · ${total-done}</div><div style="margin-top:6px;font-size:0.72rem;color:var(--text3)">Total topics: ${total}</div>`;
-      const sub={}; SUBJECT_ORDER.forEach(s=>sub[s]={total:0,done:0});
-      state.chapters.forEach(c=>{ if(!sub[c.subject]) sub[c.subject]={total:0,done:0}; sub[c.subject].total++; if(c.done) sub[c.subject].done++; });
+      document.getElementById('pieLegend').innerHTML=`
+        <div class="legend-row"><span class="legend-dot" style="background:#10b981"></span> Completed · ${done}</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#1e293b"></span> Remaining · ${total-done}</div>
+        <div style="margin-top:6px;font-size:0.72rem;color:var(--text3)">Total topics: ${total}</div>`;
+
+      // Subject-wise: chapter completion + practice from daily logs
+      const sub={};
+      SUBJECT_ORDER.forEach(s=>sub[s]={total:0,done:0,practice:0});
+      state.chapters.forEach(c=>{
+        if(!sub[c.subject]) sub[c.subject]={total:0,done:0,practice:0};
+        sub[c.subject].total++;
+        if(c.done) sub[c.subject].done++;
+      });
+      // Count practice days from daily task logs per subject
+      Object.values(state.dailyLogs||{}).forEach(log=>{
+        if(!log.tasks) return;
+        DAILY_TEMPLATE.forEach(t=>{
+          if(log.tasks[t.id] && sub[t.subject]) sub[t.subject].practice++;
+        });
+      });
+
       const colors={Quant:'#3b82f6',Reasoning:'#8b5cf6',English:'#ec4899',Banking:'#10b981',Calculations:'#f59e0b',Mock:'#64748b',GA:'#14b8a6'};
-      document.getElementById('subjectBars').innerHTML=Object.keys(sub).filter(s=>sub[s].total>0).map(s=>{
-        const p=Math.round((sub[s].done/sub[s].total)*100);
-        return `<div class="bar-row"><span class="bar-label">${s}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]||'#64748b'}"></div></div><span class="bar-val">${sub[s].done}/${sub[s].total}</span></div>`;
+      document.getElementById('subjectBars').innerHTML=Object.keys(sub).filter(s=>sub[s].total>0||sub[s].practice>0).map(s=>{
+        const p=sub[s].total?Math.round((sub[s].done/sub[s].total)*100):0;
+        const practiceLabel=sub[s].practice?` · ${sub[s].practice} practice`: '';
+        return `<div class="bar-row">
+          <span class="bar-label">${s}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]||'#64748b'}"></div></div>
+          <span class="bar-val">${sub[s].done}/${sub[s].total||0}</span>
+        </div>
+        <div style="font-size:0.65rem;color:var(--text3);margin:-2px 0 6px 96px">${p}% chapters done${practiceLabel}</div>`;
       }).join('');
+
+      // Practice completion overall (all daily required tasks ever logged)
+      let reqDone=0, reqTotal=0, optDone=0;
+      Object.values(state.dailyLogs||{}).forEach(log=>{
+        DAILY_TEMPLATE.forEach(t=>{
+          if(t.required){ reqTotal++; if(log.tasks&&log.tasks[t.id]) reqDone++; }
+          else if(log.tasks&&log.tasks[t.id]) optDone++;
+        });
+      });
+      // Today's practice for stats
+      const todayLog=getLog(state.currentDate);
+      const todayReq=DAILY_TEMPLATE.filter(t=>t.required);
+      const todayReqDone=todayReq.filter(t=>todayLog.tasks[t.id]).length;
+      const todayAllDone=DAILY_TEMPLATE.filter(t=>todayLog.tasks[t.id]).length;
+
       const notes=Object.entries(state.completionNotes);
       document.getElementById('completionNotes').innerHTML=notes.length
-        ? notes.map(([id,note])=>{ const ch=state.chapters.find(c=>c.id===id); return `<div class="complete-note"><b>${ch?ch.name:id}</b><br>${note}</div>`; }).join('')
+        ? notes.map(([id,note])=>{
+            const ch=state.chapters.find(c=>c.id===id);
+            return `<div class="complete-note"><b>${ch?ch.name:id}</b><br>${note}</div>`;
+          }).join('')
         : '<p style="color:var(--text3);font-size:0.82rem">No notes yet. Mark a topic Done to add one.</p>';
+
       const totalDays=state.chapters.reduce((a,c)=>a+(c.daysSpent||0),0);
-      document.getElementById('statsGrid').innerHTML=`<div class="stat"><div class="stat-num">${done}/${total}</div><div class="stat-label">Topics Done</div></div><div class="stat"><div class="stat-num">${totalDays}</div><div class="stat-label">Days Logged</div></div><div class="stat"><div class="stat-num">${state.streak}</div><div class="stat-label">Streak</div></div><div class="stat"><div class="stat-num">${state.shifts.length}</div><div class="stat-label">Shifts</div></div>`;
+      document.getElementById('statsGrid').innerHTML=`
+        <div class="stat"><div class="stat-num">${done}/${total}</div><div class="stat-label">Topics Done</div></div>
+        <div class="stat"><div class="stat-num">${todayReqDone}/${todayReq.length}</div><div class="stat-label">Today Required</div></div>
+        <div class="stat"><div class="stat-num">${todayAllDone}/${DAILY_TEMPLATE.length}</div><div class="stat-label">Today Practice</div></div>
+        <div class="stat"><div class="stat-num">${totalDays}</div><div class="stat-label">Days Logged</div></div>
+        <div class="stat"><div class="stat-num">${state.streak}</div><div class="stat-label">Streak</div></div>
+        <div class="stat"><div class="stat-num">${state.shifts.length}</div><div class="stat-label">Shifts</div></div>`;
+
       document.querySelectorAll('.graph-tab').forEach(t=>t.classList.toggle('active',t.dataset.range===(state.graphRange||'day')));
       renderActivityChart();
     }
@@ -1215,6 +1302,65 @@
       render(); showToast('Alert added');
     }
     function deleteCustomAlert(idx){ state.customAlerts.splice(idx,1); render(); showToast('Alert removed'); }
+
+    
+    function exportBackup(){
+      try{
+        const data={
+          version:3,
+          exportedAt:new Date().toISOString(),
+          state:state
+        };
+        const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download='banking-2027-tracker-backup-'+getTodayStr()+'.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Backup downloaded ✓');
+      }catch(e){
+        showToast('Export failed');
+      }
+    }
+
+    function importBackup(input){
+      const file=input.files&&input.files[0];
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=function(e){
+        try{
+          const data=JSON.parse(e.target.result);
+          const incoming=data.state||data;
+          if(!incoming||typeof incoming!=='object'){ showToast('Invalid backup file'); return; }
+          if(!confirm('Replace current data with this backup? Photos, alerts, progress will be restored.')) return;
+          // Restore all remembered fields
+          if(Array.isArray(incoming.chapters)) state.chapters=incoming.chapters;
+          if(incoming.dailyLogs) state.dailyLogs=incoming.dailyLogs;
+          if(Array.isArray(incoming.shifts)) state.shifts=incoming.shifts;
+          if(incoming.lastSubjectActivity) state.lastSubjectActivity=incoming.lastSubjectActivity;
+          if(typeof incoming.streak==='number') state.streak=incoming.streak;
+          if(incoming.lastStreakDate) state.lastStreakDate=incoming.lastStreakDate;
+          if(Array.isArray(incoming.pictures)) state.pictures=incoming.pictures;
+          if(incoming.completionNotes) state.completionNotes=incoming.completionNotes;
+          if(Array.isArray(incoming.customAlerts)) state.customAlerts=incoming.customAlerts;
+          if(incoming.collapsedSections) state.collapsedSections=incoming.collapsedSections;
+          if(incoming.collapsedSubjects) state.collapsedSubjects=incoming.collapsedSubjects;
+          if(incoming.galleryFilter) state.galleryFilter=incoming.galleryFilter;
+          if(incoming.graphRange) state.graphRange=incoming.graphRange;
+          if(incoming.currentDate) state.currentDate=incoming.currentDate;
+          saveState();
+          render();
+          showToast('Backup restored ✓');
+        }catch(err){
+          showToast('Could not read backup');
+        }
+        input.value='';
+      };
+      reader.readAsText(file);
+    }
 
     loadState(); render(); updateClock(); setInterval(updateClock, 1000);
   </script>
