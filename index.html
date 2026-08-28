@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Banking Exam 2027 Study Tracker</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #334155;
+      --accent: #3b82f6;
+      --accent2: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #475569;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    h2 { font-size: 1.1rem; margin: 16px 0 8px; color: #93c5fd; }
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .date-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+    .date-nav button, .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-green { background: var(--accent2); }
+    .btn-orange { background: var(--warning); color: #111; }
+    .btn-red { background: var(--danger); }
+    .btn-gray { background: var(--card2); }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .progress-bar {
+      height: 10px;
+      background: var(--card2);
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.3s;
+    }
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--accent2);
+    }
+    .task-content { flex: 1; }
+    .task-title { font-weight: 600; }
+    .task-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .chapter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .chapter-name { flex: 1; min-width: 140px; font-weight: 500; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-ok { background: #166534; color: #bbf7d0; }
+    .badge-warn { background: #854d0e; color: #fef08a; }
+    .badge-over { background: #7f1d1d; color: #fecaca; }
+    .badge-done { background: #1e40af; color: #bfdbfe; }
+    .alert {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+    .alert-warn { background: #422006; border-left: 4px solid var(--warning); }
+    .alert-danger { background: #450a0a; border-left: 4px solid var(--danger); }
+    .alert-info { background: #1e3a8a; border-left: 4px solid var(--accent); }
+    .alert-success { background: #14532d; border-left: 4px solid var(--accent2); }
+    textarea, input[type="text"], input[type="number"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 8px 14px;
+      background: var(--card2);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .tab.active { background: var(--accent); }
+    .hidden { display: none !important; }
+    .note-box {
+      background: #1e293b;
+      border: 1px dashed var(--border);
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .stat-box {
+      background: var(--card2);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-num { font-size: 1.4rem; font-weight: 700; color: #93c5fd; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); }
+    .footer-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 20px;
+      padding: 10px;
+    }
+    @media (max-width: 500px) {
+      body { padding: 8px; }
+      h1 { font-size: 1.2rem; }
+      .chapter-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🏦 Banking Exam 2027 Study Tracker</h1>
+    <p style="font-size:0.85rem;opacity:0.9">SBI / IBPS / RRB / LIC / NICL – Daily Targets + Chapter Tracker</p>
+  </div>
+
+  <div class="date-nav">
+    <button class="btn btn-gray" onclick="changeDate(-1)">← Prev</button>
+    <div style="text-align:center;flex:1">
+      <strong id="currentDateDisplay"></strong>
+      <div style="font-size:0.8rem;color:var(--muted)" id="dayType"></div>
+    </div>
+    <button class="btn btn-gray" onclick="changeDate(1)">Next →</button>
+    <button class="btn" onclick="goToday()">Today</button>
+  </div>
+
+  <!-- Alerts -->
+  <div id="alertsArea"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="daily" onclick="switchTab('daily')">📅 Daily Targets</div>
+    <div class="tab" data-tab="chapters" onclick="switchTab('chapters')">📚 Chapters</div>
+    <div class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes & Shift</div>
+    <div class="tab" data-tab="stats" onclick="switchTab('stats')">📊 Stats</div>
+  </div>
+
+  <!-- DAILY TAB -->
+  <div id="tab-daily">
+    <div class="card">
+      <h2>Today's Checklist</h2>
+      <div class="progress-bar"><div class="progress-fill" id="dailyProgress" style="width:0%"></div></div>
+      <div id="dailyTasks"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="markAllDone()">Mark All Done</button>
+        <button class="btn btn-orange btn-sm" onclick="shiftIncomplete()">Shift Incomplete → Tomorrow</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Quick Log for Today</h2>
+      <textarea id="dailyNote" rows="3" placeholder="What did you actually study? Any struggle? (saved automatically)"></textarea>
+      <button class="btn btn-sm" style="margin-top:8px" onclick="saveDailyNote()">Save Note</button>
+    </div>
+  </div>
+
+  <!-- CHAPTERS TAB -->
+  <div id="tab-chapters" class="hidden">
+    <div class="card">
+      <h2>Chapter Progress (Beginner → Advanced)</h2>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px">
+        Click +Day when you study a chapter. Mark Done when finished. Warnings appear if you spend too many days.
+      </p>
+      <div id="chapterList"></div>
+    </div>
+  </div>
+
+  <!-- NOTES TAB -->
+  <div id="tab-notes" class="hidden">
+    <div class="card">
+      <h2>Shift / Postpone Task</h2>
+      <p style="font-size:0.85rem;color:var(--muted)">If you couldn't complete something, shift it with a reason.</p>
+      <select id="shiftTaskSelect" style="width:100%;padding:8px;margin:8px 0;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px"></select>
+      <input type="text" id="shiftReason" placeholder="Reason (e.g. coaching overtime, tired, phone addiction)" />
+      <button class="btn btn-orange" style="margin-top:8px" onclick="doShift()">Shift to Tomorrow + Note</button>
+    </div>
+
+    <div class="card">
+      <h2>Shift History & Notes</h2>
+      <div id="shiftHistory"></div>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="tab-stats" class="hidden">
+    <div class="card">
+      <h2>Overall Stats</h2>
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+    <div class="card">
+      <h2>Subject Activity (Last 7 Days)</h2>
+      <div id="subjectActivity"></div>
+    </div>
+    <div class="card">
+      <h2>Reminders & Warnings</h2>
+      <div id="reminders"></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Data is saved in your browser (localStorage). Clear browser data = lose progress.<br>
+    Coaching 9:30–11:30 • Home by 1 PM • Power nap max 20 min • Sleep by 11:30 PM
+  </div>
+
+  <script>
+    // ========== DATA ==========
+    const SUBJECTS = ['Quant', 'Reasoning', 'English', 'Banking', 'Calculations', 'Mock'];
+
+    const DEFAULT_CHAPTERS = [
+      { id: 'q1', subject: 'Quant', name: 'Simplification / Approximation / Number Series', estimated: 8 },
+      { id: 'q2', subject: 'Quant', name: 'Quadratic Equations', estimated: 5 },
+      { id: 'q3', subject: 'Quant', name: 'Percentage + Ratio + Average', estimated: 12 },
+      { id: 'q4', subject: 'Quant', name: 'Profit-Loss + SI-CI', estimated: 10 },
+      { id: 'q5', subject: 'Quant', name: 'Time & Work + Pipes', estimated: 8 },
+      { id: 'q6', subject: 'Quant', name: 'Time-Speed-Distance + Boats', estimated: 8 },
+      { id: 'q7', subject: 'Quant', name: 'Mixture + Partnership + Ages', estimated: 7 },
+      { id: 'q8', subject: 'Quant', name: 'DI (All types) + Caselet', estimated: 18 },
+      { id: 'r1', subject: 'Reasoning', name: 'Inequality + Syllogism + Coding', estimated: 9 },
+      { id: 'r2', subject: 'Reasoning', name: 'Blood Relation + Direction + Ranking', estimated: 8 },
+      { id: 'r3', subject: 'Reasoning', name: 'Puzzles & Seating (Linear → Mixed)', estimated: 30 },
+      { id: 'r4', subject: 'Reasoning', name: 'Input-Output + Critical Reasoning', estimated: 8 },
+      { id: 'e1', subject: 'English', name: 'Grammar Basics + Error Spotting', estimated: 18 },
+      { id: 'e2', subject: 'English', name: 'Cloze + Fillers + Para Jumble', estimated: 12 },
+      { id: 'e3', subject: 'English', name: 'RC + Vocab (Daily Editorial)', estimated: 25 },
+      { id: 'b1', subject: 'Banking', name: 'Banking Terms + RBI + Monetary Policy', estimated: 20 },
+      { id: 'b2', subject: 'Banking', name: 'Current Affairs (Daily + Monthly)', estimated: 40 },
+      { id: 'c1', subject: 'Calculations', name: 'Tables 12-30 + Squares + Cubes', estimated: 40 },
+    ];
+
+    const DAILY_TEMPLATE = [
+      { id: 'calc', title: 'Calculations (Tables/Squares/Cubes) – 10-15 min', subject: 'Calculations', required: true },
+      { id: 'eng', title: 'English – Editorial + Grammar/Practice (60-75 min)', subject: 'English', required: true },
+      { id: 'quant', title: 'Quant – Concept + 40-60 questions', subject: 'Quant', required: true },
+      { id: 'reason', title: 'Reasoning – 2-3 Puzzles + other topics', subject: 'Reasoning', required: true },
+      { id: 'bank', title: 'Banking Awareness + Current Affairs (30-45 min)', subject: 'Banking', required: true },
+      { id: 'mistake', title: 'Review Mistake Notebook', subject: 'Mock', required: false },
+      { id: 'mock', title: 'Oliveboard Sectional / Topic Test', subject: 'Mock', required: false },
+    ];
+
+    // ========== STATE ==========
+    let state = {
+      currentDate: getTodayStr(),
+      chapters: [],
+      dailyLogs: {},      // date -> { tasks: {id: true/false}, note: '', shifted: [] }
+      shifts: [],         // { date, taskId, reason, toDate }
+      lastSubjectActivity: {} // subject -> lastDate
+    };
+
+    function getTodayStr() {
+      const d = new Date();
+      return d.toISOString().slice(0, 10);
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('bankTracker2027');
+        if (saved) {
+          state = JSON.parse(saved);
+          // ensure chapters exist
+          if (!state.chapters || state.chapters.length === 0) {
+            state.chapters = DEFAULT_CHAPTERS.map(c => ({ ...c, daysSpent: 0, done: false, notes: '' }));
+          }
+        } else {
+          state.chapters = DEFAULT_CHAPTERS.map(c => ({ ...c, daysSpent: 0, done: false, notes: '' }));
+        }
+      } catch (e) {
+        state.chapters = DEFAULT_CHAPTERS.map(c => ({ ...c, daysSpent: 0, done: false, notes: '' }));
+      }
+      if (!state.dailyLogs) state.dailyLogs = {};
+      if (!state.shifts) state.shifts = [];
+      if (!state.lastSubjectActivity) state.lastSubjectActivity = {};
+      if (!state.currentDate) state.currentDate = getTodayStr();
+    }
+
+    function saveState() {
+      localStorage.setItem('bankTracker2027', JSON.stringify(state));
+    }
+
+    // ========== HELPERS ==========
+    function formatDate(str) {
+      const d = new Date(str + 'T12:00:00');
+      return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function isWeekend(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      const day = d.getDay();
+      return day === 0 || day === 6;
+    }
+
+    function getLog(date) {
+      if (!state.dailyLogs[date]) {
+        state.dailyLogs[date] = { tasks: {}, note: '', shifted: [] };
+      }
+      return state.dailyLogs[date];
+    }
+
+    // ========== RENDER ==========
+    function render() {
+      document.getElementById('currentDateDisplay').textContent = formatDate(state.currentDate);
+      document.getElementById('dayType').textContent = isWeekend(state.currentDate) ? 'Weekend – Focus on Mocks & Weak Areas' : 'Weekday – Coaching + Fixed Targets';
+
+      renderAlerts();
+      renderDaily();
+      renderChapters();
+      renderNotes();
+      renderStats();
+      saveState();
+    }
+
+    function renderAlerts() {
+      const area = document.getElementById('alertsArea');
+      let html = '';
+
+      // Over days on chapters
+      state.chapters.forEach(ch => {
+        if (!ch.done && ch.daysSpent > ch.estimated * 1.4) {
+          html += `<div class="alert alert-danger">⚠️ You have spent <b>${ch.daysSpent} days</b> on <b>${ch.name}</b> (estimated ${ch.estimated}). Consider moving forward or seeking help.</div>`;
+        } else if (!ch.done && ch.daysSpent > ch.estimated) {
+          html += `<div class="alert alert-warn">⏳ ${ch.name}: ${ch.daysSpent}/${ch.estimated} days used. Try to finish soon.</div>`;
+        }
+      });
+
+      // Neglected subjects
+      const today = new Date(state.currentDate + 'T12:00:00');
+      SUBJECTS.forEach(sub => {
+        const last = state.lastSubjectActivity[sub];
+        if (last) {
+          const lastD = new Date(last + 'T12:00:00');
+          const diff = Math.floor((today - lastD) / (1000 * 60 * 60 * 24));
+          if (diff >= 3 && sub !== 'Mock') {
+            html += `<div class="alert alert-warn">📉 No activity in <b>${sub}</b> for ${diff} days. Give it some time today.</div>`;
+          }
+        }
+      });
+
+      // English special reminder (user weakness)
+      const engLast = state.lastSubjectActivity['English'];
+      if (engLast) {
+        const diff = Math.floor((today - new Date(engLast + 'T12:00:00')) / 86400000);
+        if (diff >= 2) {
+          html += `<div class="alert alert-info">📘 English is your weak area. Even 45-60 min daily will compound. Don't skip.</div>`;
+        }
+      }
+
+      // Calculation reminder
+      const calcCh = state.chapters.find(c => c.id === 'c1');
+      if (calcCh && !calcCh.done && calcCh.daysSpent < 10) {
+        html += `<div class="alert alert-info">🧮 Tables 12-30 + Squares/Cubes: Do 10-15 min daily. Consistency beats long sessions.</div>`;
+      }
+
+      area.innerHTML = html || '<div class="alert alert-success">✅ No major warnings today. Keep going!</div>';
+    }
+
+    function renderDaily() {
+      const log = getLog(state.currentDate);
+      const container = document.getElementById('dailyTasks');
+      let doneCount = 0;
+      let total = DAILY_TEMPLATE.length;
+
+      let html = '';
+      DAILY_TEMPLATE.forEach(task => {
+        const checked = log.tasks[task.id] ? true : false;
+        if (checked) doneCount++;
+        html += `
+          <div class="task-item">
+            <input type="checkbox" id="task-${task.id}" ${checked ? 'checked' : ''} onchange="toggleTask('${task.id}')">
+            <div class="task-content">
+              <div class="task-title">${task.title}</div>
+              <div class="task-meta">${task.subject} ${task.required ? '• Required' : '• Optional'}</div>
+            </div>
+          </div>`;
+      });
+      container.innerHTML = html;
+
+      const pct = total ? Math.round((doneCount / total) * 100) : 0;
+      document.getElementById('dailyProgress').style.width = pct + '%';
+
+      // daily note
+      document.getElementById('dailyNote').value = log.note || '';
+    }
+
+    function renderChapters() {
+      const container = document.getElementById('chapterList');
+      let html = '';
+      let currentSub = '';
+      state.chapters.forEach(ch => {
+        if (ch.subject !== currentSub) {
+          currentSub = ch.subject;
+          html += `<h3 style="margin:14px 0 6px;color:#93c5fd">${currentSub}</h3>`;
+        }
+        let badge = '';
+        if (ch.done) badge = '<span class="badge badge-done">Done</span>';
+        else if (ch.daysSpent > ch.estimated * 1.4) badge = `<span class="badge badge-over">${ch.daysSpent}/${ch.estimated} days</span>`;
+        else if (ch.daysSpent > ch.estimated) badge = `<span class="badge badge-warn">${ch.daysSpent}/${ch.estimated} days</span>`;
+        else badge = `<span class="badge badge-ok">${ch.daysSpent}/${ch.estimated} days</span>`;
+
+        html += `
+          <div class="chapter-row">
+            <div class="chapter-name">${ch.name}</div>
+            ${badge}
+            <button class="btn btn-sm btn-gray" onclick="addDay('${ch.id}')">+1 Day</button>
+            <button class="btn btn-sm btn-green" onclick="markChapterDone('${ch.id}')">${ch.done ? 'Undo' : 'Mark Done'}</button>
+          </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderNotes() {
+      // populate shift select
+      const select = document.getElementById('shiftTaskSelect');
+      select.innerHTML = DAILY_TEMPLATE.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+
+      // history
+      const hist = document.getElementById('shiftHistory');
+      if (state.shifts.length === 0) {
+        hist.innerHTML = '<p style="color:var(--muted)">No shifts yet. Good discipline!</p>';
+        return;
+      }
+      let html = '';
+      [...state.shifts].reverse().slice(0, 15).forEach(s => {
+        html += `<div class="note-box"><b>${formatDate(s.date)}</b> → ${formatDate(s.toDate)}<br>
+          Task: ${DAILY_TEMPLATE.find(t => t.id === s.taskId)?.title || s.taskId}<br>
+          Reason: ${s.reason || '—'}</div>`;
+      });
+      hist.innerHTML = html;
+    }
+
+    function renderStats() {
+      const grid = document.getElementById('statsGrid');
+      const totalCh = state.chapters.length;
+      const doneCh = state.chapters.filter(c => c.done).length;
+      const totalDaysSpent = state.chapters.reduce((a, c) => a + c.daysSpent, 0);
+      const logsCount = Object.keys(state.dailyLogs).length;
+
+      grid.innerHTML = `
+        <div class="stat-box"><div class="stat-num">${doneCh}/${totalCh}</div><div class="stat-label">Chapters Done</div></div>
+        <div class="stat-box"><div class="stat-num">${totalDaysSpent}</div><div class="stat-label">Total Study Days Logged</div></div>
+        <div class="stat-box"><div class="stat-num">${logsCount}</div><div class="stat-label">Days Tracked</div></div>
+        <div class="stat-box"><div class="stat-num">${state.shifts.length}</div><div class="stat-label">Shifts Made</div></div>
+      `;
+
+      // subject activity
+      const act = document.getElementById('subjectActivity');
+      let actHtml = '';
+      SUBJECTS.forEach(sub => {
+        const last = state.lastSubjectActivity[sub] || 'Never';
+        actHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span>${sub}</span><span style="color:var(--muted)">${last === 'Never' ? 'Never' : formatDate(last)}</span></div>`;
+      });
+      act.innerHTML = actHtml;
+
+      // reminders
+      const rem = document.getElementById('reminders');
+      let remHtml = '';
+      state.chapters.filter(c => !c.done && c.daysSpent > c.estimated).forEach(c => {
+        remHtml += `<div class="alert alert-warn">More days spent on <b>${c.name}</b> (${c.daysSpent} vs ${c.estimated})</div>`;
+      });
+      if (!remHtml) remHtml = '<div class="alert alert-success">All chapters within or near estimated days. Nice!</div>';
+      rem.innerHTML = remHtml;
+    }
+
+    // ========== ACTIONS ==========
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
+      ['daily', 'chapters', 'notes', 'stats'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
+      });
+    }
+
+    function changeDate(delta) {
+      const d = new Date(state.currentDate + 'T12:00:00');
+      d.setDate(d.getDate() + delta);
+      state.currentDate = d.toISOString().slice(0, 10);
+      render();
+    }
+
+    function goToday() {
+      state.currentDate = getTodayStr();
+      render();
+    }
+
+    function toggleTask(id) {
+      const log = getLog(state.currentDate);
+      log.tasks[id] = !log.tasks[id];
+      if (log.tasks[id]) {
+        const task = DAILY_TEMPLATE.find(t => t.id === id);
+        if (task) {
+          state.lastSubjectActivity[task.subject] = state.currentDate;
+        }
+      }
+      render();
+    }
+
+    function markAllDone() {
+      const log = getLog(state.currentDate);
+      DAILY_TEMPLATE.forEach(t => {
+        log.tasks[t.id] = true;
+        state.lastSubjectActivity[t.subject] = state.currentDate;
+      });
+      render();
+    }
+
+    function saveDailyNote() {
+      const log = getLog(state.currentDate);
+      log.note = document.getElementById('dailyNote').value;
+      saveState();
+      alert('Note saved for ' + formatDate(state.currentDate));
+    }
+
+    function addDay(chId) {
+      const ch = state.chapters.find(c => c.id === chId);
+      if (ch) {
+        ch.daysSpent += 1;
+        state.lastSubjectActivity[ch.subject] = state.currentDate;
+        render();
+      }
+    }
+
+    function markChapterDone(chId) {
+      const ch = state.chapters.find(c => c.id === chId);
+      if (ch) {
+        ch.done = !ch.done;
+        render();
+      }
+    }
+
+    function shiftIncomplete() {
+      const log = getLog(state.currentDate);
+      const incomplete = DAILY_TEMPLATE.filter(t => !log.tasks[t.id]);
+      if (incomplete.length === 0) {
+        alert('All tasks already done!');
+        return;
+      }
+      const reason = prompt('Reason for shifting incomplete tasks to tomorrow?', 'Could not complete today');
+      if (reason === null) return;
+
+      const tomorrow = new Date(state.currentDate + 'T12:00:00');
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const toDate = tomorrow.toISOString().slice(0, 10);
+
+      incomplete.forEach(t => {
+        state.shifts.push({
+          date: state.currentDate,
+          taskId: t.id,
+          reason: reason,
+          toDate: toDate
+        });
+        // also add a note in tomorrow's log
+        const tLog = getLog(toDate);
+        if (!tLog.note) tLog.note = '';
+        tLog.note += `\n[Shifted from ${state.currentDate}] ${t.title}: ${reason}`;
+      });
+      alert(`${incomplete.length} task(s) shifted to ${formatDate(toDate)}`);
+      render();
+    }
+
+    function doShift() {
+      const taskId = document.getElementById('shiftTaskSelect').value;
+      const reason = document.getElementById('shiftReason').value.trim() || 'No reason given';
+      const tomorrow = new Date(state.currentDate + 'T12:00:00');
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const toDate = tomorrow.toISOString().slice(0, 10);
+
+      state.shifts.push({
+        date: state.currentDate,
+        taskId: taskId,
+        reason: reason,
+        toDate: toDate
+      });
+
+      const tLog = getLog(toDate);
+      const taskTitle = DAILY_TEMPLATE.find(t => t.id === taskId)?.title || taskId;
+      tLog.note = (tLog.note || '') + `\n[Shifted] ${taskTitle}: ${reason}`;
+
+      document.getElementById('shiftReason').value = '';
+      alert('Shifted to ' + formatDate(toDate));
+      render();
+    }
+
+    // ========== INIT ==========
+    loadState();
+    render();
+  </script>
+</body>
+</html>
