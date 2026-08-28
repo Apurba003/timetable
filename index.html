@@ -306,6 +306,96 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
+
+    @keyframes floatY {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes glowPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.15); }
+      50% { box-shadow: 0 0 18px 2px rgba(59,130,246,0.22); }
+    }
+    @keyframes tabPop {
+      0% { transform: scale(0.96); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes checkPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    @keyframes softBounce {
+      0%,100% { transform: translateY(0); }
+      40% { transform: translateY(-3px); }
+      70% { transform: translateY(1px); }
+    }
+    .card { animation: cardReveal 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    .tab.active { animation: tabPop 0.28s ease both; }
+    .task input[type="checkbox"]:checked { animation: checkPop 0.3s ease; }
+    .streak-pill:hover { animation: softBounce 0.5s ease; }
+    .now-card { animation: cardReveal 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+    .notion-banner { animation: cardReveal 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    .stat { transition: transform 0.25s ease, border-color 0.25s, box-shadow 0.25s; }
+    .stat:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(59,130,246,0.12); }
+    .btn { transition: all 0.2s cubic-bezier(0.22,1,0.36,1); }
+    .btn:hover { box-shadow: 0 4px 14px rgba(59,130,246,0.25); }
+    .btn-green:hover { box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+    .btn-orange:hover { box-shadow: 0 4px 14px rgba(245,158,11,0.3); }
+    .btn-purple:hover { box-shadow: 0 4px 14px rgba(139,92,246,0.3); }
+    .progress-fill { position: relative; overflow: hidden; }
+    .progress-fill::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: shimmer 2.2s linear infinite;
+      background-size: 200% 100%;
+    }
+    .pic-card { transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), border-color 0.25s, box-shadow 0.3s; }
+    .pic-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 28px rgba(0,0,0,0.35); border-color: rgba(139,92,246,0.4); }
+    .gallery-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .filter-chip {
+      padding: 5px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text3);
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .filter-chip:hover { color: var(--text2); border-color: var(--border2); }
+    .filter-chip.active {
+      background: var(--purple-soft); color: #c4b5fd; border-color: rgba(139,92,246,0.4);
+      box-shadow: 0 0 12px rgba(139,92,246,0.15);
+    }
+    .gallery-group-title {
+      font-size: 0.78rem; font-weight: 700; color: var(--purple);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 16px 0 8px; display: flex; align-items: center; gap: 8px;
+      animation: slideInLeft 0.35s ease both;
+    }
+    .gallery-group-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+    .gallery-empty {
+      text-align: center; padding: 28px 16px; color: var(--text3); font-size: 0.84rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .gallery-empty span { font-size: 2rem; display: block; margin-bottom: 8px; opacity: 0.6; }
+    .pic-meta-row {
+      display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;
+    }
+    .pic-chip {
+      font-size: 0.6rem; font-weight: 600; padding: 2px 7px; border-radius: 10px;
+      background: var(--accent-soft); color: #93c5fd;
+    }
+    .pic-chip.topic { background: var(--purple-soft); color: #c4b5fd; }
+    .pic-chip.chapter { background: var(--green-soft); color: #6ee7b7; }
+    .alert { transition: transform 0.2s, box-shadow 0.2s; }
+    .alert:hover { transform: translateX(2px); }
+    .section-header:hover .section-title-text { color: #a78bfa; }
+    .subject-header:hover .subject-name { color: #93c5fd; }
+    .digital-clock-box { animation: glowPulse 4s ease-in-out infinite; }
+
   </style>
 </head>
 <body>
@@ -445,15 +535,44 @@
 
     <div id="tab-gallery" class="hidden">
       <div class="card">
-        <div class="card-title">Cloud Gallery</div>
-        <div class="card-sub">Paste photo links from Drive / Dropbox / Imgur</div>
-        <label class="form-label">Image URL</label><input type="url" id="picUrl" placeholder="https://..." />
-        <label class="form-label">Caption</label><input type="text" id="picNote" placeholder="Finished Puzzles · feeling strong" />
-        <label class="form-label">Tag (optional)</label><input type="text" id="picTag" placeholder="Quant, Mock, Milestone" />
-        <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addPicture()">Add Photo</button>
-        <p style="font-size:0.7rem;color:var(--text3);margin-top:10px;line-height:1.5">💡 Cloud folder auto-sync can be added later — tell me Google Drive / Dropbox / OneDrive when ready.</p>
+        <div class="card-title">Notion Notebook Gallery</div>
+        <div class="card-sub">Paste photo links from your Notion notebook · tag by subject / topic / chapter</div>
+        <label class="form-label">Image URL (Notion / Drive / any public link)</label>
+        <input type="url" id="picUrl" placeholder="https://..." />
+        <div class="form-row">
+          <div>
+            <label class="form-label">Subject</label>
+            <select id="picSubject">
+              <option value="">— Select —</option>
+              <option value="Quant">Quant</option>
+              <option value="Reasoning">Reasoning</option>
+              <option value="English">English</option>
+              <option value="Banking">Banking</option>
+              <option value="Calculations">Calculations</option>
+              <option value="GA">GA / CA</option>
+              <option value="Mock">Mock</option>
+              <option value="General">General / Milestone</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Topic / Chapter</label>
+            <input type="text" id="picTopic" placeholder="e.g. Puzzles, DI Caselet" list="topicSuggestions" />
+            <datalist id="topicSuggestions"></datalist>
+          </div>
+        </div>
+        <label class="form-label">Caption / Note</label>
+        <input type="text" id="picNote" placeholder="Finished seating arrangement · feeling strong" />
+        <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addPicture()">＋ Add to Gallery</button>
+        <p style="font-size:0.7rem;color:var(--text3);margin-top:10px;line-height:1.55">
+          💡 Open photo in Notion → Share / Copy link → paste here. Organize by subject & topic so notes stay folder-like.
+        </p>
       </div>
-      <div class="card"><div class="card-title">Your Photos</div><div class="pic-grid" id="picGallery" style="margin-top:8px"></div></div>
+      <div class="card">
+        <div class="card-title">Your Photos</div>
+        <div class="card-sub">Filter by subject · grouped by topic</div>
+        <div class="gallery-filters" id="galleryFilters"></div>
+        <div id="picGallery" style="margin-top:4px"></div>
+      </div>
     </div>
 
     <div id="tab-shift" class="hidden">
@@ -581,7 +700,7 @@
     let state = {
       currentDate: getTodayStr(), chapters: [], dailyLogs: {}, shifts: [], lastSubjectActivity: {},
       streak: 0, lastStreakDate: null, pictures: [], completionNotes: {}, customAlerts: [],
-      graphRange: 'day', collapsedSections: {}, collapsedSubjects: {}
+      graphRange: 'day', galleryFilter: 'All', collapsedSections: {}, collapsedSubjects: {}
     };
 
     function getTodayStr(){ return new Date().toISOString().slice(0,10); }
@@ -619,6 +738,7 @@
         if(!state.currentDate) state.currentDate=getTodayStr();
         if(typeof state.streak!=='number') state.streak=0;
         if(!state.graphRange) state.graphRange='day';
+        if(!state.galleryFilter) state.galleryFilter='All';
       }catch(e){ state.chapters=buildDefaultChapters(); }
     }
     function saveState(){ localStorage.setItem('bankTracker2027_v3',JSON.stringify(state)); }
@@ -842,9 +962,73 @@
     }
 
     function renderGallery(){
+      // topic suggestions from chapters
+      const dl=document.getElementById('topicSuggestions');
+      if(dl){
+        const names=[...new Set(state.chapters.map(c=>c.name))].slice(0,40);
+        dl.innerHTML=names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+      }
+
+      const subjects=['All','Quant','Reasoning','English','Banking','Calculations','GA','Mock','General'];
+      const filter=state.galleryFilter||'All';
+      const filtersEl=document.getElementById('galleryFilters');
+      if(filtersEl){
+        filtersEl.innerHTML=subjects.map(s=>
+          `<button class="filter-chip ${filter===s?'active':''}" onclick="setGalleryFilter('${s}')">${s}</button>`
+        ).join('');
+      }
+
       const gal=document.getElementById('picGallery');
-      if(!state.pictures.length){ gal.innerHTML='<p style="color:var(--text3);font-size:0.84rem">No photos yet. Paste a cloud link above.</p>'; return; }
-      gal.innerHTML=[...state.pictures].reverse().map((p,i)=>`<div class="pic-card"><img src="${p.url}" alt="${p.note||'Photo'}" loading="lazy" onerror="this.src='https://placehold.co/160x100/1e293b/64748b?text=Image'"/><div class="pic-info"><div class="pic-title">${p.tag||p.note||'Photo'}</div><div class="pic-note">${p.note||''}</div><button class="btn btn-ghost btn-sm" style="margin-top:5px" onclick="deletePicture(${state.pictures.length-1-i})">Delete</button></div></div>`).join('');
+      let pics=[...(state.pictures||[])];
+      if(filter!=='All') pics=pics.filter(p=>(p.subject||p.tag||'General')===filter);
+      if(!pics.length){
+        gal.innerHTML=`<div class="gallery-empty"><span>🖼️</span>No photos${filter!=='All'?' for '+filter:''} yet.<br>Paste a Notion / cloud link above.</div>`;
+        return;
+      }
+
+      // group by subject then topic
+      const groups={};
+      pics.forEach(p=>{
+        const subj=p.subject||p.tag||'General';
+        const top=p.topic||'General';
+        if(!groups[subj]) groups[subj]={};
+        if(!groups[subj][top]) groups[subj][top]=[];
+        groups[subj][top].push(p);
+      });
+
+      // preserve reverse order within each topic (newest first)
+      let html='';
+      const subjOrder=['Quant','Reasoning','English','Banking','Calculations','GA','Mock','General'];
+      const orderedSubj=[...subjOrder.filter(s=>groups[s]), ...Object.keys(groups).filter(s=>!subjOrder.includes(s))];
+      orderedSubj.forEach(subj=>{
+        if(filter==='All') html+=`<div class="gallery-group-title">${subj}</div>`;
+        Object.keys(groups[subj]).forEach(topic=>{
+          html+=`<div class="gallery-group-title" style="font-size:0.72rem;color:var(--text2);text-transform:none;letter-spacing:0.2px;margin-top:10px">${topic}</div>`;
+          html+=`<div class="pic-grid">`;
+          // newest first
+          [...groups[subj][topic]].reverse().forEach(p=>{
+            const idx=state.pictures.indexOf(p);
+            html+=`<div class="pic-card">
+              <img src="${p.url}" alt="${(p.note||'Photo').replace(/"/g,'&quot;')}" loading="lazy" onerror="this.src='https://placehold.co/160x100/1e293b/64748b?text=Image'"/>
+              <div class="pic-info">
+                <div class="pic-title">${(p.note||topic||'Photo').replace(/</g,'&lt;')}</div>
+                <div class="pic-meta-row">
+                  <span class="pic-chip">${(p.subject||p.tag||'General').replace(/</g,'&lt;')}</span>
+                  <span class="pic-chip topic">${(p.topic||'').replace(/</g,'&lt;')}</span>
+                </div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="deletePicture(${idx})">Delete</button>
+              </div>
+            </div>`;
+          });
+          html+=`</div>`;
+        });
+      });
+      gal.innerHTML=html;
+    }
+    function setGalleryFilter(s){
+      state.galleryFilter=s;
+      renderGallery();
+      saveState();
     }
 
     function renderShift(){
@@ -914,11 +1098,15 @@
     function addPicture(){
       const url=document.getElementById('picUrl').value.trim();
       const note=document.getElementById('picNote').value.trim();
-      const tag=document.getElementById('picTag').value.trim();
+      const subject=document.getElementById('picSubject').value || 'General';
+      const topic=document.getElementById('picTopic').value.trim() || 'General';
       if(!url){ showToast('Enter image URL'); return; }
-      state.pictures.push({url,note,tag,date:getTodayStr()});
-      document.getElementById('picUrl').value=''; document.getElementById('picNote').value=''; document.getElementById('picTag').value='';
-      render(); showToast('Photo added');
+      state.pictures.push({url,note,subject,topic,tag:subject,date:getTodayStr()});
+      document.getElementById('picUrl').value='';
+      document.getElementById('picNote').value='';
+      document.getElementById('picTopic').value='';
+      document.getElementById('picSubject').value='';
+      render(); showToast('Photo added to '+subject);
     }
     function deletePicture(i){ if(!confirm('Delete?')) return; state.pictures.splice(i,1); render(); }
 
