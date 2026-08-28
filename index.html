@@ -535,15 +535,13 @@
 
     <div id="tab-gallery" class="hidden">
       <div class="card">
-        <div class="card-title">Notion Notebook Gallery</div>
-        <div class="card-sub">Paste photo links from your Notion notebook · tag by subject / topic / chapter</div>
-        <label class="form-label">Image URL (Notion / Drive / any public link)</label>
-        <input type="url" id="picUrl" placeholder="https://..." />
+        <div class="card-title">Photo Gallery</div>
+        <div class="card-sub">Upload photos · stored on this device · organised subject & topic wise</div>
+
         <div class="form-row">
           <div>
             <label class="form-label">Subject</label>
             <select id="picSubject">
-              <option value="">— Select —</option>
               <option value="Quant">Quant</option>
               <option value="Reasoning">Reasoning</option>
               <option value="English">English</option>
@@ -560,16 +558,24 @@
             <datalist id="topicSuggestions"></datalist>
           </div>
         </div>
-        <label class="form-label">Caption / Note</label>
-        <input type="text" id="picNote" placeholder="Finished seating arrangement · feeling strong" />
-        <button class="btn btn-purple btn-block" style="margin-top:12px" onclick="addPicture()">＋ Add to Gallery</button>
+        <label class="form-label">Caption (optional)</label>
+        <input type="text" id="picNote" placeholder="Finished seating · feeling strong" />
+
+        <input type="file" id="picFile" accept="image/*" multiple class="hidden" onchange="handlePhotoFiles(this)" />
+        <button class="btn btn-purple btn-block" style="margin-top:14px" onclick="document.getElementById('picFile').click()">📷 Add Photo</button>
         <p style="font-size:0.7rem;color:var(--text3);margin-top:10px;line-height:1.55">
-          💡 Open photo in Notion → Share / Copy link → paste here. Organize by subject & topic so notes stay folder-like.
+          Photos stay in this tracker (browser storage), sorted by subject & topic.<br>
+          Notion plan (notes / roadmap): <a href="https://app.notion.com/p/Study-Plan-2027-2fe532e89fe88006b435f0ef7f0d70c4?v=2fd532e89fe8803880f4000c2d942210&source=copy_link" target="_blank" rel="noopener" style="color:#a78bfa">Open Study Plan 2027 ↗</a>
         </p>
       </div>
       <div class="card">
-        <div class="card-title">Your Photos</div>
-        <div class="card-sub">Filter by subject · grouped by topic</div>
+        <div class="card-header">
+          <div>
+            <div class="card-title">Your Photos</div>
+            <div class="card-sub">Filter · grouped subject → topic</div>
+          </div>
+          <span id="galleryCount" style="font-size:0.75rem;color:var(--text3);font-weight:600"></span>
+        </div>
         <div class="gallery-filters" id="galleryFilters"></div>
         <div id="picGallery" style="margin-top:4px"></div>
       </div>
@@ -979,6 +985,8 @@
       }
 
       const gal=document.getElementById('picGallery');
+      const countEl=document.getElementById('galleryCount');
+      if(countEl) countEl.textContent=(state.pictures||[]).length?((state.pictures||[]).length+' photos'):'';
       let pics=[...(state.pictures||[])];
       if(filter!=='All') pics=pics.filter(p=>(p.subject||p.tag||'General')===filter);
       if(!pics.length){
@@ -1095,19 +1103,72 @@
       render(); showToast('Removed');
     }
 
-    function addPicture(){
-      const url=document.getElementById('picUrl').value.trim();
-      const note=document.getElementById('picNote').value.trim();
-      const subject=document.getElementById('picSubject').value || 'General';
-      const topic=document.getElementById('picTopic').value.trim() || 'General';
-      if(!url){ showToast('Enter image URL'); return; }
-      state.pictures.push({url,note,subject,topic,tag:subject,date:getTodayStr()});
-      document.getElementById('picUrl').value='';
-      document.getElementById('picNote').value='';
-      document.getElementById('picTopic').value='';
-      document.getElementById('picSubject').value='';
-      render(); showToast('Photo added to '+subject);
+    function handlePhotoFiles(input){
+      const files = Array.from(input.files || []);
+      if(!files.length) return;
+      const subject = document.getElementById('picSubject').value || 'General';
+      const topic = document.getElementById('picTopic').value.trim() || 'General';
+      const note = document.getElementById('picNote').value.trim();
+      let pending = files.length;
+      let added = 0;
+      const maxBytes = 1.2 * 1024 * 1024; // ~1.2MB per image after compress target
+
+      files.forEach(file => {
+        if(!file.type.startsWith('image/')){ pending--; return; }
+        const reader = new FileReader();
+        reader.onload = function(e){
+          compressImage(e.target.result, 1280, 0.72, function(dataUrl){
+            // rough size check
+            if(dataUrl.length > 1.8e6){
+              showToast('One photo too large — skipped');
+            } else {
+              state.pictures.push({
+                url: dataUrl,
+                note: note || file.name.replace(/\.[^.]+$/,''),
+                subject,
+                topic,
+                tag: subject,
+                date: getTodayStr(),
+                name: file.name
+              });
+              added++;
+            }
+            pending--;
+            if(pending <= 0){
+              document.getElementById('picNote').value = '';
+              input.value = '';
+              render();
+              showToast(added ? (added + ' photo(s) added · ' + subject) : 'No photos added');
+            }
+          });
+        };
+        reader.readAsDataURL(file);
+      });
     }
+
+    function compressImage(dataUrl, maxW, quality, cb){
+      const img = new Image();
+      img.onload = function(){
+        let w = img.width, h = img.height;
+        if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        try {
+          cb(canvas.toDataURL('image/jpeg', quality));
+        } catch(err){
+          cb(dataUrl);
+        }
+      };
+      img.onerror = function(){ cb(dataUrl); };
+      img.src = dataUrl;
+    }
+
+    function addPicture(){
+      document.getElementById('picFile').click();
+    }
+    
     function deletePicture(i){ if(!confirm('Delete?')) return; state.pictures.splice(i,1); render(); }
 
     function shiftIncomplete(){
